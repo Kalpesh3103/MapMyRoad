@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Mirrors the Compose surface color (UI_UX_GUIDELINES.md section 4.1) for the window before Compose draws. -->
+  <color name="window_background">#FAFAFA</color>
+  <!-- Launcher icon background, the brand primary. -->
+  <color name="ic_launcher_background">#1F5FA8</color>
+</resources>

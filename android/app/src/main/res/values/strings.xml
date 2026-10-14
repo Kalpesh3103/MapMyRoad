@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name" translatable="false">MapMyRoad</string>
+
+  <!-- Bottom navigation (UI_UX_GUIDELINES.md section 3) -->
+  <string name="nav_home">Home</string>
+  <string name="nav_map">Map</string>
+  <string name="nav_trips">Trips</string>
+  <string name="nav_settings">Settings</string>
+
+  <!-- Home (S2), placeholder until M2-10 -->
+  <string name="home_title">Ready for a ride?</string>
+  <string name="home_body">MapMyRoad notices bumps and potholes while you travel and keeps a private record of your trips.</string>
+  <string name="home_start_trip">Start trip</string>
+  <string name="home_start_trip_unavailable">Trip recording is coming in a later update.</string>
+
+  <!-- Trips (S5), placeholder -->
+  <string name="trips_title">Trips</string>
+  <string name="trips_empty">Your trips will appear here after you record your first one.</string>
+
+  <!-- Settings (S10), placeholder -->
+  <string name="settings_title">Settings</string>
+  <string name="settings_placeholder">Vehicle, sharing, language and privacy options will appear here.</string>
+
+  <!-- Map (S6) -->
+  <string name="map_content_description">Map of roads around you</string>
+  <string name="map_attribution">© OpenStreetMap contributors · OpenFreeMap</string>
+  <string name="map_attribution_action">Open the OpenStreetMap copyright page</string>
+</resources>

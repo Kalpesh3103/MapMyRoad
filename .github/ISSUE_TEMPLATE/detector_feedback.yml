@@ -1,0 +1,74 @@
+name: Detector feedback
+description: Report a false pothole detection or a pothole the app missed.
+title: "[Detector] "
+labels:
+  - detector
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Privacy warning:** describe the area at neighbourhood level ONLY (for example
+        "Kothrud, near the main market road"). Never paste exact coordinates, map links with
+        coordinates, GPS traces, screenshots that show your home or work, tokens or device IDs.
+  - type: dropdown
+    id: feedback-type
+    attributes:
+      label: Type of feedback
+      options:
+        - False positive (detected, but there was no pothole)
+        - Missed pothole (pothole, but nothing was detected)
+        - Wrong severity
+    validations:
+      required: true
+  - type: dropdown
+    id: vehicle-type
+    attributes:
+      label: Vehicle type
+      options:
+        - Motorcycle
+        - Scooter
+        - Car
+        - Auto-rickshaw
+    validations:
+      required: true
+  - type: dropdown
+    id: phone-placement
+    attributes:
+      label: Phone placement
+      options:
+        - Handlebar or dashboard mount
+        - Pocket
+        - Bag or backpack
+        - Seat or cup holder
+        - In hand
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: speed-range
+    attributes:
+      label: Approximate speed
+      options:
+        - Below 10 km/h
+        - 10 to 20 km/h
+        - 20 to 40 km/h
+        - 40 to 60 km/h
+        - Above 60 km/h
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: area
+    attributes:
+      label: Approximate area (neighbourhood level only)
+      description: Never exact coordinates or a street address.
+      placeholder: Kothrud, Pune
+    validations:
+      required: false
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: Road surface, the cause if known (speed breaker, railway crossing, manhole, braking, phone handled), time of day, app version.
+    validations:
+      required: true

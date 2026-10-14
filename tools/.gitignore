@@ -1,0 +1,9 @@
+.venv/
+out/
+__pycache__/
+.ipynb_checkpoints/
+.pytest_cache/
+# Raw logger sessions never go into Git (AGENTS.md hard rules).
+raw/
+sessions/
+*.zip

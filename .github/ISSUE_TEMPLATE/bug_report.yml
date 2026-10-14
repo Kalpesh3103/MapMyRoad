@@ -1,0 +1,78 @@
+name: Bug report
+description: Something in the app does not work as expected.
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Privacy warning:** do not paste precise locations or coordinates, GPS traces, tokens,
+        device IDs, install IDs or unredacted logs in this issue. Describe places at neighbourhood
+        level at most, and redact anything sensitive from screenshots and logs.
+  - type: input
+    id: device-model
+    attributes:
+      label: Device model
+      placeholder: Samsung Galaxy A14
+    validations:
+      required: true
+  - type: input
+    id: android-version
+    attributes:
+      label: Android version
+      placeholder: Android 14
+    validations:
+      required: true
+  - type: input
+    id: app-version
+    attributes:
+      label: App version
+      description: Settings > About in the app.
+      placeholder: 0.1.0 (1)
+    validations:
+      required: true
+  - type: dropdown
+    id: vehicle-type
+    attributes:
+      label: Vehicle type
+      options:
+        - Motorcycle
+        - Scooter
+        - Car
+        - Auto-rickshaw
+        - Not applicable
+    validations:
+      required: true
+  - type: dropdown
+    id: live-trip
+    attributes:
+      label: Did this happen during a live trip?
+      options:
+        - "Yes"
+        - "No"
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include redacted screenshots or log excerpts if helpful.
+    validations:
+      required: true

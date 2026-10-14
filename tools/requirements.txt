@@ -1,0 +1,9 @@
+# MapMyRoad analysis tools (M1 detection spike). Python 3.11+.
+# Install: python -m venv .venv && pip install -r requirements.txt
+# Ranges rather than exact pins; tighten once a known-good set is recorded.
+numpy>=1.26,<3
+pandas>=2.1,<3
+scipy>=1.11,<2
+matplotlib>=3.8,<4
+notebook>=7,<8
+pytest>=8,<9

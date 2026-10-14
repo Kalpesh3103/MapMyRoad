@@ -1,0 +1,13 @@
+.gradle/
+build/
+local.properties
+keystore.properties
+*.jks
+*.keystore
+captures/
+.externalNativeBuild/
+.cxx/
+.idea/
+*.iml
+# Firebase config is added per developer until M0-5 decides whether to commit it (SECURITY.md section 10).
+app/google-services.json

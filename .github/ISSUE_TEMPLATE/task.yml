@@ -1,0 +1,64 @@
+name: Task
+description: A planned task from docs/TASKS.md.
+title: "[M?-?] "
+labels:
+  - task
+body:
+  - type: input
+    id: task-id
+    attributes:
+      label: Task ID
+      description: The ID from docs/TASKS.md.
+      placeholder: M2-4
+    validations:
+      required: true
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: Milestone
+      options:
+        - M0
+        - M1
+        - M2
+        - M3
+        - M4
+        - M5
+        - M6
+        - M7
+        - M8
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What needs to be done and why. Link the PRD requirement IDs and doc sections.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: How we know it is done. Use a checklist.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: checkboxes
+    id: docs-to-update
+    attributes:
+      label: Docs to update
+      description: Tick every document this task is expected to change.
+      options:
+        - label: PRD.md
+        - label: ARCHITECTURE.md
+        - label: API_SPEC.md
+        - label: DATABASE_SCHEMA.md
+        - label: UI_UX_GUIDELINES.md
+        - label: SECURITY.md
+        - label: TESTING_STRATEGY.md
+        - label: DEPLOYMENT.md
+        - label: DECISIONS.md (ADR)
+        - label: Privacy policy (site/privacy-policy.md)
+        - label: TASKS.md and PROGRESS.md (always)

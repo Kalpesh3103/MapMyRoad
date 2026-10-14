@@ -1,0 +1,11 @@
+# Minimal project metadata and pytest config. Dependencies are installed from
+# requirements.txt (the install command in AGENTS.md), not from this file.
+[project]
+name = "mapmyroad-tools"
+version = "0.1.0"
+description = "MapMyRoad M1 analysis tools: logger session conversion and exploration"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

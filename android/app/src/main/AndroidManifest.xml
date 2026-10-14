@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <!-- Map tiles now, API in v2 (TECH_STACK.md section 3.3). Location, foreground service and notification
+       permissions are added with the tracking service and onboarding (M2-2, M2-9), not before they are used. -->
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+  <!-- Backups are fully disabled and excluded (SECURITY.md section 8): trips contain precise locations. -->
+  <application
+    android:name=".MapMyRoadApp"
+    android:allowBackup="false"
+    android:dataExtractionRules="@xml/data_extraction_rules"
+    android:fullBackupContent="@xml/backup_rules"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:networkSecurityConfig="@xml/network_security_config"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="true"
+    android:theme="@style/Theme.MapMyRoad"
+    tools:targetApi="31">
+
+    <!-- The launcher activity is the only exported component. -->
+    <activity
+      android:name=".MainActivity"
+      android:exported="true"
+      android:theme="@style/Theme.MapMyRoad">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+  </application>
+
+</manifest>

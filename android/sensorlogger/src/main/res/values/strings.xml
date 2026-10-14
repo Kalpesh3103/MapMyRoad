@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug-only field tool (M1-1). English only: it is never shipped to users. -->
+<resources>
+  <string name="app_name">MMR Sensor Logger</string>
+
+  <!-- Notification -->
+  <string name="notification_channel_name">Recording</string>
+  <string name="notification_title">Recording calibration drive</string>
+  <string name="notification_text">Logging sensors and GPS</string>
+  <string name="action_stop">Stop</string>
+
+  <!-- Setup -->
+  <string name="setup_title">New calibration session</string>
+  <string name="debug_tool_warning">Debug tool for calibration drives only. Never publish. Recordings contain precise location.</string>
+  <string name="device_info">Device: %1$s %2$s, Android %3$s (API %4$d)</string>
+  <string name="vehicle_type">Vehicle type</string>
+  <string name="phone_placement">Phone placement</string>
+  <string name="note_label">Note (optional, e.g. route name)</string>
+  <string name="keep_cpu_awake">Keep CPU awake (partial wake lock)</string>
+  <string name="keep_cpu_awake_explanation">Recommended ON for calibration drives so sampling never pauses. Turn it OFF for battery measurement runs (M1-7), otherwise the wake lock distorts the result.</string>
+  <string name="last_session">Last session: %1$s</string>
+  <string name="start_recording">Start recording</string>
+  <string name="open_sessions">Recorded sessions</string>
+
+  <string name="vehicle_motorcycle">Motorcycle</string>
+  <string name="vehicle_scooter">Scooter</string>
+  <string name="vehicle_car">Car</string>
+  <string name="vehicle_auto_rickshaw">Auto rickshaw</string>
+  <string name="placement_mount">Mount</string>
+  <string name="placement_pocket">Pocket</string>
+  <string name="placement_bag">Bag</string>
+  <string name="placement_other">Other</string>
+
+  <!-- Permissions -->
+  <string name="permissions_ok">Permissions granted.</string>
+  <string name="permission_location_missing">Precise location permission is required. Recording cannot start without it.</string>
+  <string name="permission_notifications_missing">Notifications are denied: recording still works, but the recording notification and its Stop action are hidden.</string>
+  <string name="grant_permissions">Grant permissions</string>
+  <string name="open_app_settings">Open app settings</string>
+
+  <!-- Errors -->
+  <string name="error_storage">Storage is unavailable or full. The session was stopped.</string>
+  <string name="error_foreground">The recording service could not start. Check the location permission and try again.</string>
+  <string name="error_location_permission">Location permission is missing. The session was stopped.</string>
+  <string name="error_location_request">GPS updates could not be requested. Check that location is turned on.</string>
+
+  <!-- Recording -->
+  <string name="recording_elapsed">Recording %1$s</string>
+  <string name="safety_note">Use only when safe: passenger tags preferred. Riders must not tap while moving.</string>
+  <string name="stream_stat">%1$s: %2$d rows, %3$.1f Hz</string>
+  <string name="missing_sensors">Missing sensors: %1$s</string>
+  <string name="gps_waiting">GPS: waiting for fix (%1$d rows)</string>
+  <string name="gps_fix">GPS: accuracy %1$.0f m, speed %2$.1f km/h, fix %3$d s ago (%4$d rows)</string>
+  <string name="tag_count">Tags: %1$d</string>
+  <string name="no_tags_yet">No tags yet</string>
+  <string name="last_tag">Last tag: %1$s at %2$s</string>
+  <string name="tag_pothole">POTHOLE</string>
+  <string name="severity_minor">Minor</string>
+  <string name="severity_moderate">Moderate</string>
+  <string name="severity_severe">Severe</string>
+  <string name="label_pothole_minor">Pothole (minor)</string>
+  <string name="label_pothole_moderate">Pothole (moderate)</string>
+  <string name="label_pothole_severe">Pothole (severe)</string>
+  <string name="tag_speed_breaker">SPEED BREAKER</string>
+  <string name="tag_rough_start">ROUGH START</string>
+  <string name="tag_rough_end">ROUGH END</string>
+  <string name="tag_other">OTHER</string>
+  <string name="stop_recording">Stop recording</string>
+  <string name="stop_confirm_title">Stop recording?</string>
+  <string name="stop_confirm_text">The files are closed and the session ends.</string>
+  <string name="cancel">Cancel</string>
+
+  <!-- Sessions -->
+  <string name="sessions_title">Recorded sessions</string>
+  <string name="sessions_privacy_note">Sessions contain precise location. Never commit raw sessions to Git; convert them with tools/traces first. Also available via adb pull /sdcard/Android/data/com.mapmyroad.sensorlogger/files/sessions</string>
+  <string name="back">Back</string>
+  <string name="loading">Loading…</string>
+  <string name="no_sessions">No sessions recorded yet.</string>
+  <string name="session_details">Size %1$s, duration %2$s</string>
+  <string name="session_incomplete">Incomplete: the recording did not stop normally (partial data).</string>
+  <string name="unknown">unknown</string>
+  <string name="share">Share</string>
+  <string name="zipping">Zipping…</string>
+  <string name="delete">Delete</string>
+  <string name="share_chooser_title">Share session</string>
+  <string name="share_failed">Could not zip or share the session.</string>
+  <string name="delete_failed">Could not delete the session.</string>
+  <string name="delete_confirm_title">Delete session?</string>
+  <string name="delete_confirm_text">%1$s will be deleted permanently.</string>
+</resources>

@@ -1,0 +1,4 @@
+/build
+# Raw sessions contain precise location. Never commit them (README, privacy rules).
+sessions/
+*.zip

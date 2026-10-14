@@ -1,0 +1,23 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.{kt,kts}]
+ktlint_code_style = ktlint_official
+max_line_length = 140
+ktlint_function_naming_ignore_when_annotated_with = Composable
+# Disabled: ktlint 1.x requires SCREAMING_SNAKE_CASE for every top-level and object `val`, which conflicts with
+# Compose naming (PascalCase Color, ColorScheme and Typography values, e.g. PrimaryLight, RoadQualityColors.Good).
+ktlint_standard_property-naming = disabled
+
+[*.bat]
+end_of_line = crlf
+
+[*.{xml,yml,yaml,json,toml}]
+indent_size = 2

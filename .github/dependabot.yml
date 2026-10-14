@@ -1,0 +1,47 @@
+# Dependabot version updates (M0-10, SECURITY.md section 11).
+# Backend (Maven or Gradle, PROGRESS.md open question 4) and Docker ecosystems are added in M4.
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /android
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      # Kotlin, KSP and the Compose compiler plugin must move together.
+      kotlin-ksp:
+        patterns:
+          - "org.jetbrains.kotlin*"
+          - "com.google.devtools.ksp*"
+      compose:
+        patterns:
+          - "androidx.compose*"
+      androidx:
+        patterns:
+          - "androidx.*"
+        exclude-patterns:
+          - "androidx.compose*"
+      android-gradle-plugin:
+        patterns:
+          - "com.android.*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: pip
+    directory: /tools
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"

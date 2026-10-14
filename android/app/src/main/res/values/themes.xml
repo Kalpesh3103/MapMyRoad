@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Window theme only. All UI is drawn by Compose with MapMyRoadTheme (ui/theme/Theme.kt).
+       A platform parent is used because the Material Components (View) library is not a dependency.
+       The night variant in values-night avoids a white flash on launch in dark mode. -->
+  <style name="Theme.MapMyRoad" parent="android:Theme.Material.Light.NoActionBar">
+    <item name="android:windowBackground">@color/window_background</item>
+  </style>
+</resources>

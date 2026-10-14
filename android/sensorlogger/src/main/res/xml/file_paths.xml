@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- FileProvider paths: session directories and the temporary share zips in the cache. -->
+<paths>
+  <external-files-path name="sessions" path="sessions/" />
+  <cache-path name="share" path="share/" />
+</paths>
