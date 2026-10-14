@@ -505,9 +505,9 @@ Room stores everything the app needs offline. Raw sensor samples are **not** sto
 
 | Table | Columns |
 |---|---|
-| `trip` | `id` TEXT (UUID) PK, `trip_token` TEXT, `vehicle_type` INT, `started_at` INT (epoch ms), `ended_at` INT NULL, `distance_m` REAL, `duration_s` INT, `smoothness_score` INT NULL, `minor_count` INT, `moderate_count` INT, `severe_count` INT, `start_mode` TEXT (`manual` or `auto`) |
+| `trip` | `id` TEXT (UUID) PK, `trip_token` TEXT, `vehicle_type` INT, `started_at` INT (epoch ms), `ended_at` INT NULL, `distance_m` REAL, `duration_s` INT, `smoothness_score` INT NULL, `minor_count` INT, `moderate_count` INT, `severe_count` INT, `start_mode` TEXT (`manual` or `auto`), `stop_reason` TEXT NULL (`manual`, `auto`, `low_battery`, `service_killed`, `permission_revoked`; same codes as the `trip_ended` analytics parameter) |
 | `trip_point` | `id` INTEGER PK autoincrement, `trip_id` TEXT FK (cascade delete), `t` INT (epoch ms), `lat` REAL, `lon` REAL, `speed_mps` REAL, `accuracy_m` REAL, `roughness` REAL NULL |
-| `hazard_event_local` | `id` TEXT (UUID) PK, `trip_id` TEXT FK (cascade delete), `lat` REAL, `lon` REAL, `observed_at` INT, `severity` INT, `speed_kmh` REAL, `peak_score` REAL, `heading_deg` INT, `uploaded` INT (0 or 1) |
+| `hazard_event_local` | `id` TEXT (UUID) PK, `trip_id` TEXT FK (cascade delete), `lat` REAL, `lon` REAL, `observed_at` INT, `severity` INT, `speed_kmh` REAL, `peak_score` REAL, `heading_deg` INT NULL, `uploaded` INT (0 or 1) |
 | `segment_sample_local` | `id` TEXT (UUID) PK, `trip_id` TEXT FK (cascade delete), `start_lat` REAL, `start_lon` REAL, `end_lat` REAL, `end_lon` REAL, `observed_at` INT, `length_m` REAL, `roughness` REAL, `speed_kmh` REAL, `uploaded` INT (0 or 1) |
 | `upload_queue` (v2) | `id` INTEGER PK, `trip_id` TEXT FK (cascade delete), `state` TEXT (`pending`, `in_progress`, `done`, `failed`, `skipped`), `attempts` INT, `next_attempt_at` INT, `last_error` TEXT NULL |
 

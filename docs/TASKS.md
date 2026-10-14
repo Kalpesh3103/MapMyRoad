@@ -23,7 +23,7 @@ This is the working task list. Task IDs come from IMPLEMENTATION_PLAN.md. **This
 4. If a task turns out to be bigger than L, split it and add the new IDs here (for example `M2-1a`, `M2-1b`).
 5. Do not start a milestone's tasks before the previous milestone's exit gate unless this file says they can run in parallel.
 
-**Current focus:** M0 (code written, waiting for the first build on the Windows machine) and M1-1 (sensor logger, waiting for a device test)
+**Current focus:** first build on the Windows machine for M0, M1-1 and the M2 code (M2 started before the M1 exit gate, see PROGRESS.md 2026-10-14)
 
 ---
 
@@ -67,29 +67,29 @@ Exit gate: all P0 v1 acceptance criteria (PRD section 11) pass, internal build u
 
 | Status | ID | Task | Size | Pri | Depends on |
 |---|---|---|---|---|---|
-| [ ] | M2-1 | Pure-Kotlin detector module with JVM tests on recorded traces | L | | M1-5, M1-8 |
-| [ ] | M2-2 | `TripTrackingService` (foreground, type `location`), notification, sensor and location registration with batching | L | | M0-3 |
-| [ ] | M2-3 | Event position interpolation between GPS fixes | S | | M2-1 |
-| [ ] | M2-4 | Roughness windows (about 50 m) on device | M | | M2-1 |
-| [ ] | M2-5 | Vehicle profile selection and per-vehicle calibration factors | S | | M2-1 |
-| [ ] | M2-6 | Auto-pause when stationary, stop at low battery | S | P1 | M2-2 |
+| [~] | M2-1 | Pure-Kotlin detector module with JVM tests on recorded traces | L | | M1-5, M1-8 |
+| [~] | M2-2 | `TripTrackingService` (foreground, type `location`), notification, sensor and location registration with batching | L | | M0-3 |
+| [~] | M2-3 | Event position interpolation between GPS fixes | S | | M2-1 |
+| [~] | M2-4 | Roughness windows (about 50 m) on device | M | | M2-1 |
+| [~] | M2-5 | Vehicle profile selection and per-vehicle calibration factors | S | | M2-1 |
+| [~] | M2-6 | Auto-pause when stationary, stop at low battery | S | P1 | M2-2 |
 
 ### Storage and domain
 
 | Status | ID | Task | Size | Depends on |
 |---|---|---|---|---|
-| [ ] | M2-7 | Room schema (DATABASE_SCHEMA.md Part B), DAOs, repositories, migration tests | M | M0-3 |
-| [ ] | M2-8 | Trip summary computation (distance, duration, smoothness, counts) | S | M2-7 |
+| [~] | M2-7 | Room schema (DATABASE_SCHEMA.md Part B), DAOs, repositories, migration tests | M | M0-3 |
+| [~] | M2-8 | Trip summary computation (distance, duration, smoothness, counts) | S | M2-7 |
 
 ### UI
 
 | Status | ID | Task | Size | Depends on |
 |---|---|---|---|---|
-| [ ] | M2-9 | Onboarding with permission rationale screens | M | M0-3 |
-| [ ] | M2-10 | Home screen with Start trip and live trip view | M | M2-2 |
-| [ ] | M2-11 | Personal map: trips colored by smoothness, hazard markers, attribution | M | M0-8, M2-7 |
-| [ ] | M2-12 | Trip summary and history, delete trip, delete all data | M | M2-8 |
-| [ ] | M2-13 | Settings: vehicle, auto-start toggle, language, battery guidance screen | S | M2-9 |
+| [~] | M2-9 | Onboarding with permission rationale screens | M | M0-3 |
+| [~] | M2-10 | Home screen with Start trip and live trip view | M | M2-2 |
+| [~] | M2-11 | Personal map: trips colored by smoothness, hazard markers, attribution | M | M0-8, M2-7 |
+| [~] | M2-12 | Trip summary and history, delete trip, delete all data | M | M2-8 |
+| [~] | M2-13 | Settings: vehicle, auto-start toggle, language, battery guidance screen | S | M2-9 |
 
 ### Optional in v1
 
@@ -105,8 +105,8 @@ Exit gate: all P0 v1 acceptance criteria (PRD section 11) pass, internal build u
 | [ ] | M2-16 | Field test on 2 vehicle types and 3 phone brands | M | M2-10 |
 | [ ] | M2-17 | Crashlytics and analytics events (PRD section 9, no precise location) | S | M2-10 |
 | [ ] | M2-18 | Accessibility pass: font scaling, contrast, TalkBack | S | M2-12 |
-| [ ] | M2-19 | Android hardening: `allowBackup=false`, data extraction rules, network security config, R8 (SECURITY.md section 8) | S | M0-3 |
-| [ ] | M2-20 | Detector regression test in CI (metric baseline, TESTING_STRATEGY.md section 3.2) | S | M2-1 |
+| [~] | M2-19 | Android hardening: `allowBackup=false`, data extraction rules, network security config, R8 (SECURITY.md section 8) | S | M0-3 |
+| [~] | M2-20 | Detector regression test in CI (metric baseline, TESTING_STRATEGY.md section 3.2) | S | M2-1 |
 
 ## M3: v1 closed test and release
 

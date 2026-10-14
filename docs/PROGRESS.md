@@ -12,7 +12,7 @@ This file is the running record of where the project stands. Update it after eve
 
 | Item | Value |
 |---|---|
-| Phase | Implementation started (M0) |
+| Phase | Implementation started (M0, M1-1, M2 code) |
 | Current milestone | M0 Foundations |
 | Current task | M0-3, M0-8, M1-1 waiting for the first build and device test on the Windows machine |
 | Next task | Build and fix (M0-3), then M0-5 Firebase project, M0-6 Play Console, M1-2 test routes |
@@ -26,7 +26,7 @@ This file is the running record of where the project stands. Update it after eve
 | Planning docs (16 files) | Done | 2026-10-13 | 2026-10-14 | Yes | See log |
 | M0 Foundations | In progress | 2026-10-14 | | No | Code written, not yet built |
 | M1 Detection data spike | In progress | 2026-10-14 | | No | M1-1 logger and tools/ converter written |
-| M2 v1 build | Not started | | | No | |
+| M2 v1 build | In progress | 2026-10-14 | | No | Code written ahead of the M1 gate, thresholds are placeholders |
 | M3 v1 closed test and release | Not started | | | No | |
 | M4 v2 backend | Not started | | | No | Can overlap with M3 |
 | M5 v2 Android | Not started | | | No | |
@@ -122,6 +122,22 @@ Tick off as each is created. Do not write secrets here.
 ## 8. Log
 
 Newest first. Format: date, what changed, what is next. Link task IDs and ADRs.
+
+### 2026-10-14 (M2 code)
+- `:detector` (M2-1, M2-3, M2-4, M2-5, M2-20): filters, gating, event detection, speed normalization, severity bins, event position interpolation, speed-breaker heuristic, 50 m roughness windows, trip scoring. All parameters in `DetectorConfig` marked `TODO(M1-5)`. 89 JVM tests, compiled and passing in the dev session (IntelliJ's bundled Kotlin compiler). The regression baseline is synthetic until M1-8 fixtures exist.
+- Data layer (M2-7, M2-8): Room database v1 (trip, trip_point, hazard_event_local, segment_sample_local), DAO, repository, trip summary calculator, DataStore settings.
+- Tracking (M2-2, M2-6): `TripTrackingService` (foreground, type location, notification with Pause and Stop), `TripRecorder` on one sensor thread (100 Hz, 1 s batching, 1 Hz GPS), batched writes every 5 s, auto-pause and auto-stop, low-battery stop, recovery of killed trips as `service_killed`.
+- Screens (M2-9, M2-10, M2-12, M2-13): onboarding with permission rationale, home, live trip (no dialogs, hold to stop), trip summary, trips list, settings, privacy and delete all data, battery guidance, about.
+- Personal map (M2-11): trips colored by band with line styles, severity markers by shape, clustering, hazard sheet, trip route map on the summary.
+- Verification in the dev session: pure-Kotlin parts of `:app` (tracking policies, summary math, map segmenting, formatting) compiled with kotlinc and 74 tests passed. Android-specific code (Room, Hilt, Compose, MapLibre, service) was reviewed line by line only. Nothing was built with Gradle.
+- Field-test items: no CPU wake lock during trips (relies on 1 Hz GPS to wake the CPU), check with the 30-minute screen-off test (TESTING_STRATEGY.md 4.2).
+- Deviation from UI_UX S5: trip delete uses a confirmation dialog instead of 5-second undo (the repository has no restore).
+
+### 2026-10-14 (decision: start M2 before the M1 exit gate)
+- Decided by Kalpesh: build the v1 app (M2) in parallel with M1 data collection instead of waiting for the M1 exit gate (TASKS.md rule 5 exception).
+- Scope this round: M2-1 detector with placeholder thresholds (every value marked `TODO(M1-5)`), M2-2 to M2-13, M2-19, M2-20 with synthetic fixtures. Not in scope: M2-14 and M2-15 (auto-start, needs the spike), M2-16 (field test), M2-17 (needs Firebase), M2-18 (accessibility pass after the first build).
+- Risk: detector thresholds, severity bins and smoothness curve change after M1-5. The detector is isolated in `:detector` with all parameters in `DetectorConfig`, so retuning should not touch the app.
+- Schema: added `trip.stop_reason` (DATABASE_SCHEMA.md B1) to support the "Recording stopped unexpectedly" state.
 
 ### 2026-10-14 (M0 and M1-1 code)
 - M0-2 done: `android/`, `backend/` and `infra/` (placeholders, M4), `tools/`, `site/`, `.github/`, root README, `.gitattributes`.

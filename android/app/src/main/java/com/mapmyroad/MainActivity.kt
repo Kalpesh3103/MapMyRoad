@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.mapmyroad.ui.MapMyRoadNavHost
+import com.mapmyroad.ui.MapMyRoadRoot
 import com.mapmyroad.ui.theme.MapMyRoadTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MapMyRoadTheme {
-                MapMyRoadNavHost()
+                MapMyRoadRoot()
             }
         }
     }

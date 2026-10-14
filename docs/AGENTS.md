@@ -18,12 +18,12 @@ If documents disagree, the order of authority is: `DECISIONS.md` (latest accepte
 
 ## 2. Where we are
 
-Planning is complete and implementation has not started (see `PROGRESS.md` for the live state). The commands in section 4 become real once milestone M0 creates the projects. Until then, do not invent build files that contradict `TECH_STACK.md` and `ARCHITECTURE.md`.
+Implementation has started (M0, M1-1 and the v1 app in M2). `PROGRESS.md` holds the live state. The Android modules are `:app`, `:detector` (pure Kotlin) and `:sensorlogger` (debug field tool). Backend and infra start in M4. Do not invent build files that contradict `TECH_STACK.md` and `ARCHITECTURE.md`.
 
 ## 3. Repository layout
 
 ```
-android/    Android app (Kotlin, Compose), includes the pure-Kotlin detector module
+android/    Android app (Kotlin, Compose): :app, :detector (pure Kotlin), :sensorlogger (debug tool)
 backend/    Spring Boot service (Java), Flyway migrations
 infra/      Docker Compose, Caddyfile, Valhalla config, scripts
 docs/       Planning documents (this set), research notes, incident notes
@@ -35,7 +35,7 @@ tools/      Python analysis scripts and notebooks, trace converters
 | Task | Command |
 |---|---|
 | Android build | `cd android && ./gradlew assembleDebug` |
-| Android unit tests | `cd android && ./gradlew testDebugUnitTest` |
+| Android unit tests | `cd android && ./gradlew testDebugUnitTest :detector:test` (the detector is a plain Kotlin module) |
 | Android lint and format | `cd android && ./gradlew ktlintCheck lintDebug` (`ktlintFormat` to fix). detekt is deferred (PROGRESS.md open question 5). |
 | Sensor logger (M1 field tool) | `cd android && ./gradlew :sensorlogger:installDebug` |
 | Android instrumented tests | `cd android && ./gradlew connectedDebugAndroidTest` (needs a device or emulator) |

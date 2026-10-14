@@ -23,5 +23,7 @@ dependencyResolutionManagement {
 rootProject.name = "MapMyRoad"
 
 include(":app")
+// Pure-Kotlin detection pipeline, no Android dependencies (ARCHITECTURE.md section 5, AGENTS.md section 8).
+include(":detector")
 // Debug-only field tool for M1 data collection. Never published (SECURITY.md section 8).
 include(":sensorlogger")

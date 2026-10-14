@@ -140,6 +140,8 @@ room {
 }
 
 dependencies {
+    implementation(project(":detector"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -164,6 +166,8 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.play.services.location)
     implementation(libs.maplibre.android.sdk)
     implementation(libs.timber)
 

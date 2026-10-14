@@ -2,10 +2,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools">
 
-  <!-- Map tiles now, API in v2 (TECH_STACK.md section 3.3). Location, foreground service and notification
-       permissions are added with the tracking service and onboarding (M2-2, M2-9), not before they are used. -->
+  <!-- Map tiles now, API in v2 (TECH_STACK.md section 3.3). -->
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+  <!-- Trip recording (M2-2, TECH_STACK.md section 3.3): precise location in the foreground service while a trip is
+       active, and the persistent recording notification. No background location and no activity recognition:
+       manual trips need neither. TODO(M2-14): auto-start would add ACTIVITY_RECOGNITION and background location,
+       opt-in only. -->
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
   <!-- Backups are fully disabled and excluded (SECURITY.md section 8): trips contain precise locations. -->
   <application
@@ -31,6 +40,12 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+
+    <!-- Trip tracking (M2-2). Not exported (SECURITY.md section 8): only the app's own Intents reach it. -->
+    <service
+      android:name=".sensing.TripTrackingService"
+      android:exported="false"
+      android:foregroundServiceType="location" />
   </application>
 
 </manifest>

@@ -55,7 +55,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Lint, unit tests and debug build
-        run: ./gradlew ktlintCheck lintDebug testDebugUnitTest assembleDebug --stacktrace
+        run: ./gradlew ktlintCheck lintDebug testDebugUnitTest :detector:test assembleDebug --stacktrace
 
       - name: Upload lint and test reports
         if: failure()

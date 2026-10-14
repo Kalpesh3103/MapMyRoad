@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Map (S6), personal map M2-11. The base map strings are in strings.xml. -->
+  <string name="map_mode_label">Map data</string>
+  <string name="map_mode_my_trips">My trips</string>
+  <string name="map_mode_community">Community</string>
+  <string name="map_mode_community_later">Arrives in a later version</string>
+  <string name="map_empty_banner">Record a trip to see it here</string>
+
+  <!-- Legend (UI_UX_GUIDELINES.md sections 4.2 and 4.3) -->
+  <string name="map_legend_title">Legend</string>
+  <string name="map_legend_show">Show legend</string>
+  <string name="map_legend_hide">Hide legend</string>
+  <string name="map_band_good">Smooth</string>
+  <string name="map_band_fair">Rough</string>
+  <string name="map_band_poor">Very rough</string>
+  <string name="map_band_no_data">No data yet</string>
+  <string name="map_line_solid">solid line</string>
+  <string name="map_line_dashed">dashed line</string>
+  <string name="map_line_dotted">dotted thick line</string>
+  <string name="map_line_thin">thin line</string>
+  <string name="map_severity_minor">Minor bump</string>
+  <string name="map_severity_moderate">Pothole</string>
+  <string name="map_severity_severe">Severe pothole</string>
+  <string name="map_shape_circle">circle</string>
+  <string name="map_shape_triangle">triangle</string>
+  <string name="map_shape_octagon">octagon with exclamation mark</string>
+  <!-- Legend item read by TalkBack, for example "Rough, dashed line". -->
+  <string name="map_legend_item_description">%1$s, %2$s</string>
+
+  <!-- Text summary of the visible map area for TalkBack (UI_UX_GUIDELINES.md section 11) -->
+  <plurals name="map_summary_trips">
+    <item quantity="one">%d trip in view</item>
+    <item quantity="other">%d trips in view</item>
+  </plurals>
+  <plurals name="map_summary_severe">
+    <item quantity="one">%d severe pothole</item>
+    <item quantity="other">%d severe potholes</item>
+  </plurals>
+  <plurals name="map_summary_moderate">
+    <item quantity="one">%d pothole</item>
+    <item quantity="other">%d potholes</item>
+  </plurals>
+  <plurals name="map_summary_minor">
+    <item quantity="one">%d minor bump</item>
+    <item quantity="other">%d minor bumps</item>
+  </plurals>
+  <!-- For example "Map of roads around you. 3 trips in view, 2 severe potholes, 1 pothole, 4 minor bumps." -->
+  <string name="map_summary_format">%1$s. %2$s, %3$s, %4$s, %5$s.</string>
+
+  <!-- Hazard detail sheet (S7), own hazards -->
+  <string name="map_hazard_observed_label">Observed</string>
+  <string name="map_hazard_speed_label">Speed at detection</string>
+  <string name="map_hazard_speed_value">%1$d km/h</string>
+  <string name="map_hazard_source_own">Detected on one of your trips</string>
+  <string name="map_hazard_view_trip">View trip</string>
+
+  <!-- Trip summary route map (S4) -->
+  <string name="map_route_content_description">Map of this trip\'s route</string>
+  <!-- For example "Map of this trip's route. 2 severe potholes, 1 pothole, 4 minor bumps." -->
+  <string name="map_route_summary_format">%1$s. %2$s, %3$s, %4$s.</string>
+</resources>

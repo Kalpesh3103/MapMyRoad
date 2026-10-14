@@ -8,19 +8,211 @@
   <string name="nav_trips">Trips</string>
   <string name="nav_settings">Settings</string>
 
-  <!-- Home (S2), placeholder until M2-10 -->
-  <string name="home_title">Ready for a ride?</string>
-  <string name="home_body">MapMyRoad notices bumps and potholes while you travel and keeps a private record of your trips.</string>
+  <!-- Shared -->
+  <string name="common_back">Back</string>
+  <string name="common_cancel">Cancel</string>
+  <string name="common_delete">Delete</string>
+  <string name="common_dismiss">Dismiss</string>
+  <string name="common_selected">Selected</string>
+  <string name="common_delete_failed">Could not delete. Please try again.</string>
+  <!-- %1$s is the distance number, for example 12.4 -->
+  <string name="common_distance_km">%1$s km</string>
+  <!-- %1$s is the date, %2$s the start time -->
+  <string name="common_date_time">%1$s, %2$s</string>
+
+  <!-- Vehicles (PRD TS-2) -->
+  <string name="vehicle_motorcycle">Motorcycle</string>
+  <string name="vehicle_scooter">Scooter</string>
+  <string name="vehicle_car">Car</string>
+  <string name="vehicle_auto_rickshaw">Auto-rickshaw</string>
+  <string name="vehicle_choose">Choose vehicle</string>
+  <!-- Screen reader label of the vehicle button. %1$s is the vehicle -->
+  <string name="vehicle_selector_description">Vehicle: %1$s</string>
+
+  <!-- Road quality bands (UI_UX_GUIDELINES.md section 4.2) -->
+  <string name="band_good">Smooth</string>
+  <string name="band_fair">Rough</string>
+  <string name="band_poor">Very rough</string>
+  <string name="band_no_data">Not enough data</string>
+
+  <!-- Onboarding (S1) -->
+  <!-- %1$d is the current step, %2$d the number of steps -->
+  <string name="onboarding_step_progress">Step %1$d of %2$d</string>
+  <string name="onboarding_welcome_title">Welcome to MapMyRoad</string>
+  <string name="onboarding_welcome_body">Your phone feels the road. We turn bumps into a map.</string>
+  <string name="onboarding_get_started">Get started</string>
+  <string name="onboarding_vehicle_title">What do you travel in?</string>
+  <string name="onboarding_vehicle_body">This helps us tell a pothole from the normal movement of your vehicle. You can change it later in Settings.</string>
+  <string name="onboarding_continue">Continue</string>
+  <string name="onboarding_not_now">Not now</string>
+
+  <!-- Permission rationale (UI_UX_GUIDELINES.md S1 table) and permission denied states (section 8) -->
+  <string name="permission_location_title">See where the road is rough</string>
+  <string name="permission_location_body">We use your location during trips to place bumps on the map. It is only recorded while a trip is running.</string>
+  <string name="permission_location_denied_title">Location is off</string>
+  <string name="permission_location_denied_body">Trips can\'t be recorded without precise location. You can still explore the app, and turn location on any time in system settings.</string>
+  <string name="permission_notifications_title">Know when a trip is recording</string>
+  <string name="permission_notifications_body">Android requires a notification while we record. It also gives you a Stop button.</string>
+  <string name="permission_notifications_denied_title">Notifications are off</string>
+  <string name="permission_notifications_denied_body">Trips still record, but you won\'t see the recording notification or its Stop button. You can turn notifications on any time in system settings.</string>
+  <string name="permission_open_settings">Open system settings</string>
+
+  <!-- Home (S2) -->
+  <string name="home_greeting_morning">Good morning</string>
+  <string name="home_greeting_afternoon">Good afternoon</string>
+  <string name="home_greeting_evening">Good evening</string>
+  <string name="home_vehicle_label">Vehicle</string>
   <string name="home_start_trip">Start trip</string>
-  <string name="home_start_trip_unavailable">Trip recording is coming in a later update.</string>
+  <string name="home_starting_trip">Starting…</string>
+  <string name="home_open_live_trip">Open current trip</string>
+  <string name="home_saving_trip">Saving trip…</string>
+  <string name="home_start_failed">The trip didn\'t start. Please try again.</string>
+  <string name="home_choose_vehicle_first">Choose your vehicle to start a trip.</string>
+  <string name="home_notifications_off">Notifications are off, so the recording notification may be hidden. Trips still record.</string>
+  <string name="home_location_denied_body">Trips need precise location to place bumps on the map. Turn it on in system settings, then tap Start trip again.</string>
+  <string name="home_trip_in_progress_title">Trip in progress</string>
+  <string name="home_trip_in_progress_body">MapMyRoad is recording your trip.</string>
+  <string name="home_trip_in_progress_open">Open</string>
+  <string name="home_service_killed_title">Recording stopped unexpectedly</string>
+  <string name="home_service_killed_body">Your last trip ended early, maybe because the phone closed the app to save battery. What was recorded is saved.</string>
+  <string name="home_battery_card_title">Keep trips recording</string>
+  <string name="home_battery_card_body">Some phones stop apps in the background to save battery. A quick settings change keeps your trips recording.</string>
+  <string name="home_battery_guidance_action">Battery guidance</string>
+  <string name="home_last_trip_title">Last trip</string>
+  <string name="home_smoothness_label">Smoothness</string>
+  <!-- %1$d is the smoothness score from 0 to 100 -->
+  <string name="home_smoothness_value">Smoothness %1$d</string>
+  <string name="home_view_summary">View summary</string>
+  <string name="home_empty_title">No trips yet</string>
+  <string name="home_empty_body">Tap Start trip before you set off. After the trip you\'ll see how smooth the road was.</string>
+  <plurals name="home_bumps_count">
+    <item quantity="one">%d bump</item>
+    <item quantity="other">%d bumps</item>
+  </plurals>
 
-  <!-- Trips (S5), placeholder -->
+  <!-- Live trip (S3). Shown during a trip: keep short, no text under 16 sp -->
+  <string name="live_state_recording">Recording</string>
+  <string name="live_state_paused">Paused</string>
+  <string name="live_state_paused_stationary">Paused (stopped)</string>
+  <string name="live_state_waiting_gps">Waiting for GPS</string>
+  <string name="live_state_saving">Saving trip…</string>
+  <string name="live_state_not_recording">No trip is recording</string>
+  <string name="live_bumps_label">Bumps</string>
+  <string name="live_bumps_minor">Minor</string>
+  <string name="live_bumps_rough">Rough</string>
+  <string name="live_bumps_severe">Severe</string>
+  <string name="live_gps_waiting">GPS: waiting for signal</string>
+  <string name="live_gps_good">GPS: good</string>
+  <string name="live_gps_weak">GPS: weak</string>
+  <string name="live_pause">Pause</string>
+  <string name="live_resume">Resume</string>
+  <string name="live_stop">STOP</string>
+  <string name="live_hold_to_stop">Hold to stop</string>
+  <string name="live_stop_action">Stop trip</string>
+
+  <!-- Trip summary (S4) -->
+  <string name="summary_title">Trip summary</string>
+  <string name="summary_duration">Duration</string>
+  <string name="summary_distance">Distance</string>
+  <string name="summary_vehicle">Vehicle</string>
+  <string name="summary_smoothness_title">Smoothness</string>
+  <string name="summary_score_missing">–</string>
+  <string name="summary_score_out_of">out of 100</string>
+  <!-- Screen reader text. %1$d is the score, %2$s the band label -->
+  <string name="summary_smoothness_description">Smoothness %1$d out of 100, %2$s</string>
+  <string name="summary_smoothness_no_data_description">Smoothness: not enough data for a score</string>
+  <string name="summary_service_killed">Recording stopped unexpectedly. Everything recorded until then is saved.</string>
+  <string name="summary_bumps_title">Bumps by severity</string>
+  <string name="summary_not_found">This trip is no longer available.</string>
+  <string name="summary_delete_trip">Delete trip</string>
+  <string name="summary_delete_dialog_title">Delete this trip?</string>
+  <string name="summary_delete_dialog_body">The route and the bumps recorded on this trip will be removed from this phone. This can\'t be undone.</string>
+  <plurals name="summary_minor_count">
+    <item quantity="one">%d minor bump</item>
+    <item quantity="other">%d minor bumps</item>
+  </plurals>
+  <plurals name="summary_moderate_count">
+    <item quantity="one">%d pothole</item>
+    <item quantity="other">%d potholes</item>
+  </plurals>
+  <plurals name="summary_severe_count">
+    <item quantity="one">%d severe pothole</item>
+    <item quantity="other">%d severe potholes</item>
+  </plurals>
+
+  <!-- Trips (S5) -->
   <string name="trips_title">Trips</string>
-  <string name="trips_empty">Your trips will appear here after you record your first one.</string>
+  <string name="trips_empty">No trips yet. Start a trip from Home, and it will appear here when you stop.</string>
+  <string name="trips_deleted">Trip deleted</string>
+  <string name="trips_more_actions">More actions</string>
+  <string name="trips_open_summary">open summary</string>
+  <!-- %1$s is the distance with unit, %2$s the duration -->
+  <string name="trips_distance_duration">%1$s · %2$s</string>
 
-  <!-- Settings (S10), placeholder -->
+  <!-- Settings (S10) -->
   <string name="settings_title">Settings</string>
-  <string name="settings_placeholder">Vehicle, sharing, language and privacy options will appear here.</string>
+  <string name="settings_section_trips">Trips</string>
+  <string name="settings_section_sharing">Sharing</string>
+  <string name="settings_section_language">Language</string>
+  <string name="settings_section_privacy">Privacy and data</string>
+  <string name="settings_section_help">Help</string>
+  <string name="settings_section_about">About</string>
+  <string name="settings_vehicle">Vehicle</string>
+  <string name="settings_vehicle_body">Sets how bumps are detected.</string>
+  <string name="settings_auto_pause">Pause when stopped</string>
+  <string name="settings_auto_pause_body">Pauses recording while you are not moving, and resumes when you move again.</string>
+  <string name="settings_sharing">Contribute anonymously</string>
+  <string name="settings_sharing_later">Community sharing arrives in a later version.</string>
+  <string name="settings_language_value">English</string>
+  <string name="settings_language_later">Hindi and Marathi arrive in a later version.</string>
+  <string name="settings_privacy_body">What is collected and how to delete it</string>
+  <string name="settings_battery_body">Keep trips recording when the screen is off</string>
+  <string name="settings_about_body">Version, map data and licenses</string>
+
+  <!-- Privacy and data (S11), mirrors PRD section 8.1 for v1 -->
+  <string name="privacy_title">Privacy and data</string>
+  <string name="privacy_collected_title">What MapMyRoad collects</string>
+  <string name="privacy_location_title">Location during trips</string>
+  <string name="privacy_location_body">Used to record your route and place bumps on your map. Location is only recorded while a trip is running.</string>
+  <string name="privacy_motion_title">Motion sensors</string>
+  <string name="privacy_motion_body">Processed on your phone to detect bumps. Raw sensor data is never stored or sent.</string>
+  <string name="privacy_on_phone_title">Your trips stay on this phone</string>
+  <string name="privacy_on_phone_body">In this version, trips, routes and bumps are stored only on this phone. Nothing is uploaded or shared.</string>
+  <string name="privacy_diagnostics_title">Crash reports and usage statistics</string>
+  <string name="privacy_diagnostics_body">Help us fix problems and improve the app. They never contain your precise location.</string>
+  <string name="privacy_no_account_title">No account</string>
+  <string name="privacy_no_account_body">No sign-in, email or phone number is needed.</string>
+  <string name="privacy_policy_link">Read the privacy policy</string>
+  <string name="privacy_delete_title">Delete my data</string>
+  <string name="privacy_delete_body">Removes all your trips, bumps and settings from this phone. You will see the welcome screens again.</string>
+  <string name="privacy_delete_blocked_by_trip">Stop the current trip before deleting your data.</string>
+  <string name="privacy_delete_button">Delete all data</string>
+  <string name="privacy_deleting">Deleting…</string>
+  <string name="privacy_delete_dialog_title">Delete all data?</string>
+  <string name="privacy_delete_dialog_body">This deletes all trips, routes, recorded bumps and potholes, and settings on this phone. Nothing has been shared, so nothing is stored anywhere else. This can\'t be undone.</string>
+  <string name="privacy_delete_confirm">Delete everything</string>
+
+  <!-- Battery guidance (PRD PV-5) -->
+  <string name="battery_title">Battery guidance</string>
+  <string name="battery_intro">Some phones stop apps in the background to save battery, which can end a trip early. These steps let MapMyRoad keep recording when the screen is off.</string>
+  <!-- %1$d is the step number -->
+  <string name="battery_step_number">%1$d.</string>
+  <string name="battery_step_1">Tap Open battery settings below.</string>
+  <string name="battery_step_2">If you only see some apps, switch the list to All apps.</string>
+  <string name="battery_step_3">Find MapMyRoad in the list.</string>
+  <string name="battery_step_4">Choose Don\'t optimize (on some phones: Unrestricted or No restrictions).</string>
+  <string name="battery_manufacturer_note">Some brands add their own setting, often called Auto-start, Background activity or App launch. If trips still stop early, allow MapMyRoad there too.</string>
+  <string name="battery_open_settings">Open battery settings</string>
+
+  <!-- About -->
+  <string name="about_title">About MapMyRoad</string>
+  <!-- %1$s is the version name, for example 0.1.0 -->
+  <string name="about_version">Version %1$s</string>
+  <string name="about_map_data_title">Map data</string>
+  <string name="about_map_data_body">Map data © OpenStreetMap contributors, available under the Open Database License. Map style and tiles by OpenFreeMap.</string>
+  <string name="about_osm_copyright_link">OpenStreetMap copyright and license</string>
+  <string name="about_licenses_title">Open source licenses</string>
+  <string name="about_licenses_body">MapMyRoad is built with open source software, including Android Jetpack, Kotlin, Hilt, MapLibre and Timber, used under their licenses (mostly Apache License 2.0 and BSD). A full list of licenses will be added here before release.</string>
 
   <!-- Map (S6) -->
   <string name="map_content_description">Map of roads around you</string>
