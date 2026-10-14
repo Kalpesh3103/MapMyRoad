@@ -1,0 +1,7 @@
+# Build context for backend/Dockerfile. The image only needs the boot jar produced by
+# `./gradlew bootJar`, so ignore everything and re-include that jar. This also keeps source,
+# .env files and any local secrets out of the build context.
+*
+!build/libs/*.jar
+# Gradle's classes-only jar is not runnable; exclude it so COPY matches the boot jar only.
+build/libs/*-plain.jar

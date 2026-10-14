@@ -39,9 +39,9 @@ tools/      Python analysis scripts and notebooks, trace converters
 | Android lint and format | `cd android && ./gradlew ktlintCheck lintDebug` (`ktlintFormat` to fix). detekt is deferred (PROGRESS.md open question 5). |
 | Sensor logger (M1 field tool) | `cd android && ./gradlew :sensorlogger:installDebug` |
 | Android instrumented tests | `cd android && ./gradlew connectedDebugAndroidTest` (needs a device or emulator) |
-| Backend build and tests | `cd backend && ./mvnw verify` (or `./gradlew build` if Gradle is chosen) |
-| Backend format | `cd backend && ./mvnw spotless:apply` |
-| Local stack | `cd infra && docker compose up -d` |
+| Backend build and tests | `cd backend && ./gradlew build` (`gradlew.bat build` on Windows, needs JDK 21; Testcontainers tests need Docker) |
+| Backend format | Not configured yet (Spotless planned) |
+| Local stack | `cd infra && docker compose -f docker-compose.dev.yml up -d` |
 | Python tools | `cd tools && python -m venv .venv && pip install -r requirements.txt` |
 
 On Windows use `gradlew.bat` instead of `./gradlew`. Android commands exist since M0-3. Backend commands become real in M4.

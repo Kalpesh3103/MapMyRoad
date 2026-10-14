@@ -14,8 +14,8 @@ the phone) and uses free and open-source tools.
 ```
 android/app/           Android app (Kotlin, Jetpack Compose)
 android/sensorlogger/  Debug sensor logger module (M1)
-backend/               Spring Boot service, starts in M4 (placeholder)
-infra/                 Docker Compose, Caddy, Valhalla, scripts, starts in M4 (placeholder)
+backend/               Spring Boot service (Java 21, Gradle), v2 backend (M4)
+infra/                 Docker Compose (dev and prod), Caddy, backup and deploy scripts
 tools/                 Python analysis scripts, notebooks and trace converters
 docs/                  Planning documents (start with docs/AGENTS.md)
 site/                  Static pages for GitHub Pages (privacy policy draft)
@@ -36,6 +36,15 @@ Requirements: JDK 17 or newer and the Android SDK (Android Studio installs both)
   ```
 
 Checks run by CI: `./gradlew ktlintCheck lintDebug testDebugUnitTest assembleDebug`.
+
+## Quick start (backend)
+
+Requirements: JDK 21 and Docker. Details in [`backend/README.md`](backend/README.md).
+
+```sh
+cd infra && cp .env.example .env && docker compose -f docker-compose.dev.yml up -d db
+cd ../backend && ./gradlew bootRun --args="--spring.profiles.active=local"   # gradlew.bat on Windows
+```
 
 ### Firebase (optional)
 

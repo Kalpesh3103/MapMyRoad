@@ -104,8 +104,8 @@ This document lists every technology the project uses, why it was chosen, and wh
 | Item | Choice | Notes |
 |---|---|---|
 | Language | Java, current LTS (21 or newer) | |
-| Framework | Spring Boot, latest stable line at project start | |
-| Build | Maven or Gradle, whichever you are faster in | Android uses Gradle regardless. |
+| Framework | Spring Boot 4.1.1 | Spring Framework 7, Security 7.1, Jackson 3 (ADR-0018). |
+| Build | Gradle (Kotlin DSL), own 9.2.1 wrapper in `backend/` | ADR-0018. Spring Boot 4 needs Gradle 8.14 or later. |
 | Concurrency | Virtual threads enabled | Suits IO-bound proxying to Valhalla and Photon. |
 | Packaging | Docker image built in CI | |
 
@@ -114,12 +114,12 @@ This document lists every technology the project uses, why it was chosen, and wh
 | Purpose | Library | Notes |
 |---|---|---|
 | Web | Spring Web (MVC), Bean Validation | |
-| Data access | Spring Data JPA, JdbcTemplate | JPA for plain CRUD. Native SQL for spatial queries, clustering and tile generation. |
-| Spatial types | Hibernate Spatial, JTS | |
+| Data access | NamedParameterJdbcTemplate | Plain JDBC with named parameters for everything (ADR-0018). |
+| Spatial types | PostGIS functions in SQL | No Hibernate Spatial: coordinates go in and out as plain numbers or GeoJSON (ADR-0018). |
 | Migrations | Flyway (`flyway-core` plus the PostgreSQL module) | |
 | Auth | Spring Security OAuth2 resource server (JWT) | Self-issued short-lived tokens, HS256 with a rotating secret. |
 | App attestation | Google API client for the Play Integrity verdict endpoint | Needs a Google Cloud project and service account. |
-| Rate limiting | Bucket4j with Caffeine | |
+| Rate limiting | In-house token bucket on Caffeine | Single instance only (ADR-0018). |
 | Caching | Caffeine, plus a DB table for geocoding | |
 | HTTP clients | Spring `RestClient` | Explicit timeouts. Resilience4j circuit breaker optional. |
 | API docs | springdoc-openapi | Generates `openapi.json`, checked against API_SPEC.md in CI. |

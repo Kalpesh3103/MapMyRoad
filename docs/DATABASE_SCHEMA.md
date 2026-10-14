@@ -492,7 +492,7 @@ Implications: a single free VM handles `hazard_event` comfortably. For `segment_
 | Database roles | `rq_migrator` (DDL, used by Flyway), `rq_app` (DML only, used by the API), `rq_readonly` (analysis) |
 | Network | Database not exposed publicly, reachable only on the Docker network |
 | Backups | Nightly `pg_dump -Fc` to object storage, restore test each month |
-| Flyway files | `V1__extensions_and_device.sql`, `V2__osm_reference.sql`, `V3__events_and_observations.sql`, `V4__hazards_and_segments.sql`, `V5__feedback_and_queue.sql`, `V6__geocode_cache.sql`, then v3 and v4 files as needed |
+| Flyway files | `V1__extensions_and_device.sql`, `V2__osm_reference.sql`, `V3__events_and_observations.sql`, `V4__hazards_and_segments.sql`, `V5__feedback_and_queue.sql`, `V6__geocode_cache.sql`, `V7__retention_indexes.sql` (plain indexes on `received_at`, `last_seen_at` and refresh-token `expires_at` for the retention job), then v3 and v4 files as needed |
 | Test data | Seed script generating synthetic hazards and segments around a test route for local development and tests |
 
 ---

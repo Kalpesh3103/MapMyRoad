@@ -91,7 +91,7 @@ Errors use RFC 9457 problem details (`application/problem+json`) with an extra s
 | Endpoint | Limit |
 |---|---|
 | `POST /devices/challenge`, `POST /devices` | 10 per hour per IP |
-| `POST /devices/token` | 30 per hour per device |
+| `POST /devices/token` | 30 per hour per IP (the refresh call carries no access token, so the device is not known before the token is checked) |
 | `POST /events` | 60 per hour per device |
 | `GET /tiles/**` | 600 per minute per IP |
 | `GET /hazards` | 60 per minute per device |

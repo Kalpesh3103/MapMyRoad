@@ -28,7 +28,7 @@ This file is the running record of where the project stands. Update it after eve
 | M1 Detection data spike | In progress | 2026-10-14 | | No | M1-1 logger and tools/ converter written |
 | M2 v1 build | In progress | 2026-10-14 | | No | Code written ahead of the M1 gate, thresholds are placeholders |
 | M3 v1 closed test and release | Not started | | | No | |
-| M4 v2 backend | Not started | | | No | Can overlap with M3 |
+| M4 v2 backend | In progress | 2026-10-14 | | No | Round 1 (foundation and ingest) written, round 2 (matching, aggregation, tiles, routes) next |
 | M5 v2 Android | Not started | | | No | |
 | M6 v2 hardening and release | Not started | | | No | |
 | M7 v3 navigation and alerts | Not started | | | No | |
@@ -76,7 +76,7 @@ Review at every milestone gate. Mark each risk Open, Mitigated, Realized or Clos
 | 1 | Logo and branding (name and package ID resolved: MapMyRoad, `com.mapmyroad`) | Kalpesh | M3-2 | Open |
 | 2 | Confirm ADR-0013 (no feedback while moving) and update PRD CM-4 wording | Kalpesh | Before M5 | Open |
 | 3 | Confirm ADR-0014 (no certificate pinning initially) | Kalpesh | Before M4-20 | Proposed |
-| 4 | Backend build tool: Maven or Gradle | Kalpesh | M4-5 | Open |
+| 4 | Backend build tool: Maven or Gradle | Kalpesh | M4-5 | Decided: Gradle (ADR-0018) |
 | 5 | Static analysis tools for Java and Kotlin (detekt, ktlint, Error Prone, SpotBugs) | Kalpesh | M0-3 (Android), M4-5 (Java) | Android decided in M0-3: ktlint + Android Lint. detekt deferred until it supports the project's Kotlin version cleanly. Java tools open. |
 | 6 | Closed-testing requirement for the Play developer account (confirm current rule) | Kalpesh | M3-1 | Open |
 | 7 | Research mode for raw sensor snippets | Kalpesh | After M1 | Open |
@@ -122,6 +122,16 @@ Tick off as each is created. Do not write secrets here.
 ## 8. Log
 
 Newest first. Format: date, what changed, what is next. Link task IDs and ADRs.
+
+### 2026-10-14 (M4 round 1: backend foundation)
+- Decisions (ADR-0018): Gradle with its own 9.2.1 wrapper in `backend/`, Spring Boot 4.1.1, Java 21, plain JDBC, an in-house rate limiter on Caffeine. Spotless deferred. Versions and artifact names were checked against the Spring Boot 4.1.1 and Testcontainers 2.0.5 BOMs in the local Gradle cache.
+- M4-5: Spring Boot skeleton, Flyway V1 to V6 from DATABASE_SCHEMA.md, plus V7 (retention indexes).
+- M4-6 and M4-15: `GET /v1/config`, RFC 9457 problem details with stable codes, request IDs, `X-App-Version` check (426), gzip request limit (256 KB decompressed), token-bucket rate limits per API_SPEC.md section 4, security headers, structured logging in the `prod` profile.
+- M4-7: challenge and registration with Play Integrity (Google decode API via a service-account JWT, no extra library; a no-op verifier for local and test only, refused in `prod`), HS256 access tokens with key rotation, refresh-token rotation with reuse detection, `DELETE /v1/devices/me` with the recompute queue, rejection of tokens for deleted devices.
+- M4-8 and M4-16: `POST /v1/events` with request-level and item-level validation, idempotent batch inserts, rejection reasons, upload kill switch. The nightly retention job is batched and idempotent. The recompute-queue consumer comes with aggregation in round 2.
+- M4-1, M4-4, M4-20 (partial): backend Dockerfile, local and production compose files, Caddyfile, backup, restore, deploy and rollback scripts, `backend-ci` workflow, Dependabot for the backend.
+- Verification in the dev session: the whole backend (main and unit tests) compiles with javac against cached Spring Boot 4.1.1 jars. Spring Security OAuth2 and Nimbus classes were compiled against hand-written stand-ins. Agents ran their unit tests with offline runners: device 52 of 52, web 94 of 95 (the failure is the runner's missing SLF4J provider), ingest 32 of 32. Integration tests need Docker and were not run. Gradle was not run.
+- Next: first `gradlew build` on Windows (JDK 21), `docker compose -f infra/docker-compose.dev.yml up -d db`, then `bootRun` with the `local` profile. Then round 2: M4-9, M4-10, M4-11, M4-12, M4-13, M4-14, M4-19, plus the OSM pipeline (M4-2, M4-3).
 
 ### 2026-10-14 (M0-3 build fixes)
 - Fixed five app ktlint violations and replaced invalid MapLibre bounds property references with the latitude/longitude properties exposed by SDK 11.5.2.

@@ -60,6 +60,7 @@ What becomes easier, what becomes harder, what we must do or watch. When we shou
 | 0015 | Actuator on a separate internal management port | Accepted | 2026-10-14 |
 | 0016 | Phase v1 ships without a backend and without in-app navigation | Accepted (planning) | 2026-10-13 |
 | 0017 | App name MapMyRoad and package ID `com.mapmyroad` | Accepted | 2026-10-14 |
+| 0018 | Backend build and stack details: Gradle, Spring Boot 4, plain JDBC, in-house rate limiter | Accepted | 2026-10-14 |
 
 ---
 
@@ -400,6 +401,30 @@ The app is named MapMyRoad. The Android application ID is `com.mapmyroad`. The b
 
 ### Consequences
 M0-3 and M0-6 can start. Logo, icon and tagline remain open (UI_UX_GUIDELINES.md section 14). Before the Play listing goes live, check that the name does not clash with existing apps or trademarks and that `com.mapmyroad` is not already taken on Google Play. Internal identifiers (`roadquality` database, `rq_` roles, `/opt/rq` paths) keep their current names.
+
+## ADR-0018: Backend build and stack details
+- Status: Accepted
+- Date: 2026-10-14
+- Decided by: Kalpesh (build tool), planning assistant (the rest)
+- Related: PROGRESS.md open question 4, TECH_STACK.md section 4, M4-5, M4-15
+
+### Context
+M4 starts the Spring Boot backend. TECH_STACK.md left the build tool open, suggested Spring Data JPA with Hibernate Spatial for CRUD, and Bucket4j for rate limiting. The development session has no network access, and the Maven wrapper scripts cannot be generated offline.
+
+### Options considered
+1. **Gradle (Kotlin DSL) with its own wrapper:** same tool as the Android project, and the wrapper can be produced offline. **Maven:** familiar for Spring, but the wrapper would have to be created on the Windows machine first.
+2. **Spring Boot 4.1.1:** current line, verified from the cached BOM (Spring Framework 7, Security 7.1, Jackson 3, Flyway 12, Testcontainers 2). **Spring Boot 3.x:** better known, but past open-source support.
+3. **Plain JDBC (NamedParameterJdbcTemplate) for all data access** versus JPA for CRUD plus native SQL. Almost every query is spatial or aggregate, so JPA adds mapping work (Hibernate Spatial) for little gain.
+4. **Small in-house token-bucket limiter on Caffeine** versus Bucket4j. The limits are per process (single instance), and the limiter is short and tested.
+
+### Decision
+Gradle 9.2.1 wrapper (Spring Boot 4 needs Gradle 8.14 or later), Spring Boot 4.1.1, Java 21, plain JDBC with named parameters, Flyway migrations, and an in-house rate limiter. Spotless and Java static analysis are deferred until the first green CI build.
+
+### Consequences
+- Backend docs and commands use `gradlew build`.
+- Gradle must run on JDK 21 or newer for the backend. The Android project keeps its own Gradle 8.11.1 wrapper.
+- Revisit the limiter if the backend ever runs more than one instance (shared state would be needed, for example Redis).
+- Revisit JPA only if plain CRUD grows.
 
 ---
 

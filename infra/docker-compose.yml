@@ -1,0 +1,132 @@
+# Production stack (M4-1/M4-4, DEPLOYMENT.md sections 2, 3.3 and 4). Lives at /opt/rq/compose/ on the VM
+# next to Caddyfile and .env (root-only, mode 600).
+#
+#   docker compose up -d                 # start or update everything
+#   docker compose ps / logs --tail=200 api
+#   /opt/rq/scripts/deploy.sh <tag>      # releases go through the script (backup, pull, smoke check, rollback)
+#
+# Rules (SECURITY.md section 9):
+# - Only Caddy publishes ports (80, 443). API, Actuator (8081), database and Valhalla publish nothing.
+# - Images are pinned by version. TODO(M4-4): also pin digests (image: name:tag@sha256:...) before go-live.
+# - Every image must have an arm64 build for the Oracle Ampere VM (see the db service note).
+# Memory limits and Postgres settings are initial values for a shared 24 GB VM. Measure and adjust.
+
+name: mmr
+
+services:
+  caddy:
+    # TODO(M4-4): verify the current 2.x release on Docker Hub and pin the digest.
+    image: caddy:2.10
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"   # HTTP/3
+    environment:
+      # Used by the Caddyfile as {$API_DOMAIN}.
+      API_DOMAIN: ${API_DOMAIN:?set API_DOMAIN in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+    networks: [edge, internal]
+    mem_limit: 256m
+
+  api:
+    # OWNER is the GitHub account that owns the repository (lowercase). Built by backend-ci job "image".
+    image: ghcr.io/OWNER/mmr-api:${API_TAG:?set API_TAG in .env}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      MANAGEMENT_SERVER_PORT: "8081"
+      DB_URL: jdbc:postgresql://db:5432/roadquality
+      PLAY_INTEGRITY_SA_FILE: /run/secrets/play_integrity_sa
+      # TODO(M4-2): VALHALLA_URL: http://valhalla:8002
+    secrets:
+      - play_integrity_sa
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [internal]
+    mem_limit: 2g
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    healthcheck:
+      # Container health without curl/wget in the image: bash's /dev/tcp sends a minimal HTTP request to
+      # the internal readiness probe on the management port. This relies on bash being present in the
+      # Ubuntu-based Temurin image; switching to an Alpine or distroless base would break it.
+      # Trade-off: Docker does not restart a container just because it is unhealthy (restart: unless-stopped
+      # only covers crashes). The health status is for `docker compose ps`, ordering and the deploy script.
+      # External availability is covered by Caddy's active check of /v1/config and the uptime monitor.
+      test:
+        - CMD
+        - bash
+        - -c
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/8081 &&
+          printf 'GET /actuator/health/readiness HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3 &&
+          grep -q '"status":"UP"' <&3
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
+
+  db:
+    # arm64 caveat: the official postgis/postgis images have historically been amd64-only (verify, M0-9).
+    # On the Ampere VM use a multi-arch build instead, for example imresamu/postgis:16-3.4 (verify the tag),
+    # or build https://github.com/postgis/docker-postgis (16-3.4) on the VM and tag it locally.
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: roadquality
+      # Explicit variables instead of env_file so the database never sees JWT keys or backup credentials.
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - /opt/rq/data/postgres:/var/lib/postgresql/data
+    networks: [internal]
+    shm_size: 256mb
+    mem_limit: 6g
+    command: >
+      postgres -c shared_buffers=1GB -c effective_cache_size=4GB
+               -c work_mem=16MB -c maintenance_work_mem=256MB
+               -c max_connections=50
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d roadquality"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # TODO(M4-2): Valhalla (round 2). Pin a version and verify the arm64 build first.
+  # valhalla:
+  #   image: ghcr.io/gis-ops/docker-valhalla/valhalla:<pinned-version>
+  #   restart: unless-stopped
+  #   volumes:
+  #     - /opt/rq/data/valhalla:/custom_files
+  #   networks: [internal]
+  #   mem_limit: 6g
+
+secrets:
+  # Play Integrity service account key (SECURITY.md section 10). Create the file on the VM:
+  #   install -m 0400 -o 10001 -g 10001 key.json /opt/rq/compose/secrets/play-integrity-sa.json
+  # Outside Swarm this is a read-only bind mount, so the file must be readable by uid 10001 (the API user).
+  play_integrity_sa:
+    file: ./secrets/play-integrity-sa.json
+
+networks:
+  edge: {}
+  internal:
+    # Not "internal: true": the API needs outbound internet (Play Integrity, later Photon).
+    # No ports are published on this network.
+    internal: false
+
+volumes:
+  caddy_data: {}
+  caddy_config: {}

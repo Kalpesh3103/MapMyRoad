@@ -1,0 +1,10 @@
+# Production profile (CODING_STANDARDS.md sections 4.6 and 4.7, SECURITY.md section 12).
+# Structured JSON (Elastic Common Schema) console logs. MDC entries are included automatically, so every line carries
+# the requestId set by RequestIdFilter. Request bodies, coordinates, tokens and device IDs are never logged.
+logging:
+  structured:
+    format:
+      console: ecs
+  level:
+    root: INFO
+    com.mapmyroad: INFO

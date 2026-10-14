@@ -1,0 +1,45 @@
+# Caddy reverse proxy for the MapMyRoad API (DEPLOYMENT.md section 4).
+# {$API_DOMAIN} comes from the caddy service environment (docker-compose.yml), set in .env.
+# Caddy obtains and renews the TLS certificate automatically; ports 80 and 443 must be reachable.
+
+{$API_DOMAIN} {
+	encode gzip
+
+	# Upload size limit at the edge (SECURITY.md section 9). Spring enforces its own limit too.
+	request_body {
+		max_size 2MB
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		-Server
+	}
+
+	# Only the public API port. Actuator (8081) is never proxied (ADR-0015).
+	reverse_proxy api:8080 {
+		# Active health check on the same endpoint the uptime monitor uses.
+		health_uri /v1/config
+		health_interval 30s
+		health_timeout 5s
+		# The API rejects /v1/** requests without X-App-Version (API_SPEC.md). Send a version that is
+		# always above MIN_SUPPORTED_APP_VERSION so the check measures availability, not app version policy.
+		# health_headers is a reverse_proxy subdirective of Caddy 2 (active health checks). If the pinned
+		# Caddy version rejects it, switch to health_port 8081 + health_uri /actuator/health/readiness
+		# (internal network only, still never proxied) and tell the lead.
+		health_headers {
+			X-App-Version 9999.0.0
+		}
+	}
+
+	# JSON access log, kept 14 days (336h) to match the privacy policy (SECURITY.md section 12).
+	# TODO(M4-4): consider truncating client IPs in logs (SECURITY.md section 12).
+	log {
+		output file /data/access.log {
+			roll_size 20mb
+			roll_keep 5
+			roll_keep_for 336h
+		}
+		format json
+	}
+}

@@ -1,0 +1,7 @@
+# Local development profile (DEPLOYMENT.md section 15). Play Integrity is not enforced locally.
+mmr:
+  device:
+    integrity-enforced: false
+logging:
+  level:
+    com.mapmyroad: DEBUG

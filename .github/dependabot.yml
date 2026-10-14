@@ -1,5 +1,5 @@
 # Dependabot version updates (M0-10, SECURITY.md section 11).
-# Backend (Maven or Gradle, PROGRESS.md open question 4) and Docker ecosystems are added in M4.
+# Backend uses Gradle (wrapper in backend/). Docker covers the backend/Dockerfile base image.
 version: 2
 updates:
   - package-ecosystem: gradle
@@ -26,6 +26,29 @@ updates:
       android-gradle-plugin:
         patterns:
           - "com.android.*"
+
+  - package-ecosystem: gradle
+    directory: /backend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      # The Spring Boot plugin and BOM manage most backend versions; move them together.
+      spring-boot:
+        patterns:
+          - "org.springframework.boot*"
+      testcontainers:
+        patterns:
+          - "org.testcontainers*"
+
+  - package-ecosystem: docker
+    directory: /backend
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "chore(deps)"
 
   - package-ecosystem: github-actions
     directory: /

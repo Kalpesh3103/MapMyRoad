@@ -369,7 +369,7 @@ What is **not** backed up (it can be rebuilt): Valhalla tiles, OSM extracts, ref
 
 | Signal | Source | Alert |
 |---|---|---|
-| Availability | External uptime monitor on `GET /v1/config` | Down for 5 minutes |
+| Availability | External uptime monitor on `GET /v1/config`, sending the header `X-App-Version: 9999.0.0` (the API rejects `/v1/**` requests without it) | Down for 5 minutes |
 | API error rate and latency | Micrometer metrics (Prometheus scraping the management port) | 5xx above a threshold, p95 above target |
 | Ingestion backlog | Count of unmatched rows (`matched_at IS NULL`) | Growing for more than an hour |
 | Job failures | Job metrics and logs | Any failure of matching, aggregation, retention or backup |

@@ -1,0 +1,96 @@
+# Local development stack (M4-1 local part, DEPLOYMENT.md section 15).
+#
+# Usage (from infra/):
+#   cp .env.example .env                                   # once, then fill in local-only values
+#   docker compose -f docker-compose.dev.yml up -d db      # database only, run the API from the IDE or bootRun
+#   docker compose -f docker-compose.dev.yml --profile api up -d --build
+#                                                          # database + API container (run `./gradlew bootJar` in backend/ first)
+#   docker compose -f docker-compose.dev.yml down          # stop (add -v to also delete the database volume)
+#
+# Never copy production data into this stack (DEPLOYMENT.md section 15).
+
+name: mapmyroad-dev
+
+services:
+  db:
+    # PostGIS 16 with PostGIS 3.4, same major versions as production.
+    # arm64 caveat (Apple Silicon, Oracle Ampere VM): the official postgis/postgis images have historically
+    # been published for linux/amd64 only (verify on Docker Hub, M0-9 / M4-1). On Apple Silicon Docker
+    # Desktop runs the amd64 image under emulation, which works but is slower. Native arm64 alternatives:
+    #   - imresamu/postgis:16-3.4   (community multi-arch build of the same Dockerfiles, verify the tag)
+    #   - build the official image yourself from https://github.com/postgis/docker-postgis (16-3.4 directory)
+    # Change only the image line; volume, environment and healthcheck stay the same.
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: roadquality
+      # Interpolated from infra/.env (Compose reads it automatically). Passed explicitly instead of
+      # env_file so the database container does not receive unrelated secrets such as JWT_KEYS.
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in infra/.env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in infra/.env}
+    ports:
+      # Published on the loopback interface only, so tools on this machine (IDE, psql, bootRun) can connect
+      # but nothing else on the network can. Production publishes no database port at all.
+      - "127.0.0.1:${DB_PORT_LOCAL:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    shm_size: 256mb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d roadquality"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # TODO(M4-2): Valhalla routing and map-matching with a tiny OSM extract (round 2).
+  # valhalla:
+  #   image: ghcr.io/gis-ops/docker-valhalla/valhalla:<pinned-version>   # verify arm64 support
+  #   restart: unless-stopped
+  #   volumes:
+  #     - valhalla:/custom_files
+  #   ports:
+  #     - "127.0.0.1:8002:8002"
+  #   mem_limit: 4g
+
+  # Optional: the API as a container, enabled with `--profile api`. The image packs the jar built by
+  # `./gradlew bootJar` (backend/Dockerfile does not compile), so build the jar first.
+  api:
+    profiles: ["api"]
+    build:
+      context: ../backend
+    image: mmr-api:dev
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      # Overrides the localhost URL in .env (meant for bootRun) with the service name on the Compose network.
+      DB_URL: jdbc:postgresql://db:5432/roadquality
+      MANAGEMENT_SERVER_PORT: "8081"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      # Public API on loopback only. The management port 8081 is not published, matching production
+      # (ADR-0015). Inspect it with: docker compose -f docker-compose.dev.yml exec api bash (see healthcheck).
+      - "127.0.0.1:8080:8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    healthcheck:
+      # Java-free probe: the Temurin image has bash but no reliable curl or wget, so open a TCP
+      # connection with bash's /dev/tcp and look for "UP" in the readiness response.
+      test:
+        - CMD
+        - bash
+        - -c
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/8081 &&
+          printf 'GET /actuator/health/readiness HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3 &&
+          grep -q '"status":"UP"' <&3
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+volumes:
+  pgdata: {}
+  # valhalla: {}   # TODO(M4-2)

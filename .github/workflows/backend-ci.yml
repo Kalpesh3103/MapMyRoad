@@ -1,0 +1,148 @@
+# TODO(M0-10): pin each action to a full commit SHA (Dependabot keeps them updated).
+# SECURITY.md section 11 requires SHA pinning. Major version tags are used here only
+# because the SHAs could not be looked up when this file was written. Do not invent SHAs.
+#
+# Backend CI (M4-20, DEPLOYMENT.md section 6.1, TESTING_STRATEGY.md section 12).
+# - build: compile, unit tests and Testcontainers integration tests (Docker is available on
+#   GitHub's ubuntu runners, so PostGIS containers start there).
+#   TODO(M4-20): add Spotless check, contract tests, OpenAPI diff and a dependency scan once they exist.
+# - image: on tags backend-v* only, builds the multi-arch API image and pushes it to GHCR
+#   (the "backend-image" row of DEPLOYMENT.md 6.1, kept in this file to reuse the build job).
+#   Path filters are not evaluated for tag pushes, so every backend-v* tag triggers it.
+
+name: backend-ci
+
+on:
+  pull_request:
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
+  push:
+    branches:
+      - main
+    tags:
+      - "backend-v*"
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # Safe even if the executable bit is already recorded in Git
+      # (git update-index --chmod=+x backend/gradlew).
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
+
+      - name: Build and test
+        run: ./gradlew build --stacktrace
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-reports
+          path: |
+            backend/build/reports/
+            backend/build/test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+
+  image:
+    name: Build and push API image
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/backend-v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # Write access to GHCR only for this job (SECURITY.md section 11: minimal permissions).
+    permissions:
+      contents: read
+      packages: write
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
+
+      # Tests already ran in the build job; the jar is architecture independent.
+      - name: Build boot jar
+        run: ./gradlew clean bootJar --stacktrace
+
+      # GHCR image names must be lowercase; the tag is the git tag without the "backend-v" prefix.
+      - name: Compute image name and tag
+        env:
+          OWNER: ${{ github.repository_owner }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          echo "IMAGE=ghcr.io/${OWNER,,}/mmr-api" >> "$GITHUB_ENV"
+          echo "VERSION=${REF_NAME#backend-v}" >> "$GITHUB_ENV"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # arm64 for the Oracle Ampere VM, amd64 for local use (DEPLOYMENT.md 6.1).
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ env.VERSION }}
+            ${{ env.IMAGE }}:${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ env.VERSION }}

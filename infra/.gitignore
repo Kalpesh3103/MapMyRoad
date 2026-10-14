@@ -1,0 +1,8 @@
+# Local and production environment files hold secrets. Only .env.example is committed.
+.env
+.env.*
+!.env.example
+# Mounted credentials (for example the Play Integrity service account key).
+secrets/
+# Rollback bookkeeping written by scripts/deploy.sh on the VM.
+.previous_api_tag
