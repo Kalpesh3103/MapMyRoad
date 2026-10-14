@@ -36,8 +36,7 @@ class DataStoreSettingsRepository
                     } else {
                         throw error
                     }
-                }
-                .map { preferences -> preferences.toUserSettings() }
+                }.map { preferences -> preferences.toUserSettings() }
 
         override suspend fun setVehicleType(vehicleType: VehicleType) {
             dataStore.edit { it[Keys.VEHICLE_TYPE] = vehicleType.dbCode }

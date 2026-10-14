@@ -58,8 +58,7 @@ class PersonalMapViewModel
         private val mapData: StateFlow<MapData?> =
             combine(tripRepository.observeAllTracks(), tripRepository.observeAllHazards()) { tracks, hazards ->
                 MapData.build(tracks, hazards)
-            }
-                .flowOn(defaultDispatcher)
+            }.flowOn(defaultDispatcher)
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
         private val viewport = MutableStateFlow<GeoBounds?>(null)
@@ -80,8 +79,7 @@ class PersonalMapViewModel
                         selectedHazard = hazardId?.let { data.hazardsById[it] },
                     )
                 }
-            }
-                .flowOn(defaultDispatcher)
+            }.flowOn(defaultDispatcher)
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), PersonalMapUiState())
 
         fun onViewportChanged(bounds: GeoBounds) {

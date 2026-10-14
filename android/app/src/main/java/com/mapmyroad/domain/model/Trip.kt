@@ -17,6 +17,7 @@ enum class StopReason(
     MANUAL(code = "manual"),
     AUTO(code = "auto"),
     LOW_BATTERY(code = "low_battery"),
+
     /** The service died (process killed, crash) and the trip was closed on the next start (UI_UX section 8). */
     SERVICE_KILLED(code = "service_killed"),
     PERMISSION_REVOKED(code = "permission_revoked"),

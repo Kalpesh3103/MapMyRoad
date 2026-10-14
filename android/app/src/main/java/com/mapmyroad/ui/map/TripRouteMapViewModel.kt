@@ -72,8 +72,7 @@ class TripRouteMapViewModel
                             severeCount = hazards.count { it.severity == Severity.SEVERE },
                         )
                     }
-                }
-                .flowOn(defaultDispatcher)
+                }.flowOn(defaultDispatcher)
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), TripRouteMapUiState())
 
         fun setTripId(id: String) {

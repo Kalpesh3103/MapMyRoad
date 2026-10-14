@@ -1,7 +1,6 @@
 package com.mapmyroad.ui.format
 
 import android.content.Context
-import android.text.format.DateFormat as AndroidDateFormat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
@@ -9,6 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.mapmyroad.R
 import java.text.DateFormat
 import java.util.Date
+import android.text.format.DateFormat as AndroidDateFormat
 
 /**
  * Trip date and start time in the system locale, for example "14 Oct 2026, 09:41". The time follows the system

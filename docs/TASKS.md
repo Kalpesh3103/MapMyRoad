@@ -25,6 +25,8 @@ This is the working task list. Task IDs come from IMPLEMENTATION_PLAN.md. **This
 
 **Current focus:** first build on the Windows machine for M0, M1-1 and the M2 code (M2 started before the M1 exit gate, see PROGRESS.md 2026-10-14)
 
+M0-3 build-fix status (2026-10-14): app Kotlin compilation, app ktlint checks, debug unit tests and Android Lint pass on Windows after the map bounds API and formatting fixes. Full assembly and device verification remain pending.
+
 ---
 
 ## M0: Foundations

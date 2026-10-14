@@ -88,8 +88,7 @@ class HomeViewModel
                             latestTrip.id != local.dismissedServiceKilledTripId,
                     isBatteryCardDismissed = local.isBatteryCardDismissed,
                 )
-            }
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), HomeUiState())
+            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), HomeUiState())
 
         fun onVehicleSelected(vehicleType: VehicleType) {
             viewModelScope.launch { settingsRepository.setVehicleType(vehicleType) }

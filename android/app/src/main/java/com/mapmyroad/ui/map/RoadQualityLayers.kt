@@ -278,7 +278,12 @@ internal fun MapLibreMap.moveCameraTo(
 /** The visible area of the map. */
 internal fun MapLibreMap.visibleBounds(): GeoBounds {
     val visible = projection.visibleRegion.latLngBounds
-    return GeoBounds(south = visible.latSouth, west = visible.lonWest, north = visible.latNorth, east = visible.lonEast)
+    return GeoBounds(
+        south = visible.latitudeSouth,
+        west = visible.longitudeWest,
+        north = visible.latitudeNorth,
+        east = visible.longitudeEast,
+    )
 }
 
 // hasProperty + getProperty are the long-standing GeoJSON Feature API. A JSON null value is treated as absent,

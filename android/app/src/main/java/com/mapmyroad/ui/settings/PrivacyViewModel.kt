@@ -47,8 +47,7 @@ class PrivacyViewModel
                     isDeleting = delete.isDeleting,
                     hasDeleteFailed = delete.hasFailed,
                 )
-            }
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), PrivacyUiState())
+            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), PrivacyUiState())
 
         /**
          * Deletes every trip, hazard and setting on this phone (v1 stores nothing elsewhere). Settings are cleared

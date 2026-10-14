@@ -33,8 +33,7 @@ class SettingsViewModel
                         vehicleType = settings.vehicleType,
                         isAutoPauseEnabled = settings.autoPauseEnabled,
                     )
-                }
-                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), SettingsUiState())
+                }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), SettingsUiState())
 
         fun onVehicleSelected(vehicleType: VehicleType) {
             viewModelScope.launch { settingsRepository.setVehicleType(vehicleType) }

@@ -21,8 +21,7 @@ class GeoBounds(
         lon: Double,
     ): Boolean = lat in south..north && lon in west..east
 
-    fun intersects(other: GeoBounds): Boolean =
-        other.south <= north && other.north >= south && other.west <= east && other.east >= west
+    fun intersects(other: GeoBounds): Boolean = other.south <= north && other.north >= south && other.west <= east && other.east >= west
 
     override fun equals(other: Any?): Boolean =
         other is GeoBounds && south == other.south && west == other.west && north == other.north && east == other.east

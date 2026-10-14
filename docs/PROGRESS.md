@@ -123,6 +123,11 @@ Tick off as each is created. Do not write secrets here.
 
 Newest first. Format: date, what changed, what is next. Link task IDs and ADRs.
 
+### 2026-10-14 (M0-3 build fixes)
+- Fixed five app ktlint violations and replaced invalid MapLibre bounds property references with the latitude/longitude properties exposed by SDK 11.5.2.
+- Verified on Windows: `:app:ktlintCheck`, `:app:compileDebugKotlin`, `:app:testDebugUnitTest` and `:app:lintDebug` pass. The initial combined run timed out; unit tests and Android Lint completed successfully on rerun.
+- Next: full debug assembly and device verification.
+
 ### 2026-10-14 (M2 code)
 - `:detector` (M2-1, M2-3, M2-4, M2-5, M2-20): filters, gating, event detection, speed normalization, severity bins, event position interpolation, speed-breaker heuristic, 50 m roughness windows, trip scoring. All parameters in `DetectorConfig` marked `TODO(M1-5)`. 89 JVM tests, compiled and passing in the dev session (IntelliJ's bundled Kotlin compiler). The regression baseline is synthetic until M1-8 fixtures exist.
 - Data layer (M2-7, M2-8): Room database v1 (trip, trip_point, hazard_event_local, segment_sample_local), DAO, repository, trip summary calculator, DataStore settings.
