@@ -10,8 +10,9 @@ package com.mapmyroad.detector
  * Units are part of every name. Accelerations are in m/s^2 (suffix Mps2), angular rates in rad/s.
  */
 data class DetectorConfig(
-    // ---- Sampling and filtering (steps 1 to 3) ----
     /**
+     * Section: Sampling and filtering (steps 1 to 3).
+     *
      * Highest sensor rate the ring buffers are sized for. Above it the rolling baseline covers a shorter time span
      * (oldest samples are dropped), it never allocates. Design assumption: Android 12+ caps normal apps at 200 Hz.
      */
@@ -43,8 +44,11 @@ data class DetectorConfig(
      * from field data.
      */
     val lowPassCutoffHz: Double = 22.0,
-    // ---- Gating (step 4) ----
-    /** Minimum speed for events and roughness (ARCHITECTURE.md: about 10 km/h). Initial value, TODO(M1-5): calibrate from field data. */
+    /**
+     * Section: Gating (step 4).
+     *
+     * Minimum speed for events and roughness (ARCHITECTURE.md: about 10 km/h). Initial value, TODO(M1-5): calibrate from field data.
+     */
     val minSpeedKmh: Double = 10.0,
     /** The latest fix must be at most this old for the gate to be open. Initial value, TODO(M1-5): calibrate from field data. */
     val maxFixAgeMs: Long = 3_000L,
@@ -66,8 +70,11 @@ data class DetectorConfig(
      * calibrate from field data.
      */
     val handlingLookbackMs: Long = 500L,
-    // ---- Event detection (step 5) ----
-    /** Window of the rolling RMS baseline (ARCHITECTURE.md: last few seconds). Initial value, TODO(M1-5): calibrate from field data. */
+    /**
+     * Section: Event detection (step 5).
+     *
+     * Window of the rolling RMS baseline (ARCHITECTURE.md: last few seconds). Initial value, TODO(M1-5): calibrate from field data.
+     */
     val baselineWindowMs: Long = 3_000L,
     /** Adaptive threshold = this multiple of the rolling RMS. Initial value, TODO(M1-5): calibrate from field data. */
     val thresholdRmsMultiplier: Double = 4.0,
@@ -87,8 +94,9 @@ data class DetectorConfig(
      * calibrate from field data.
      */
     val refractoryMs: Long = 300L,
-    // ---- Rear wheel and double impulse (step 6) ----
     /**
+     * Section: Rear wheel and double impulse (step 6).
+     *
      * Wheelbase per vehicle. The rear-wheel hit is expected wheelbase / speed after the front-wheel peak. For every
      * vehicle the detector absorbs that hit into the same event (no double count). Initial value, TODO(M1-5): calibrate
      * from field data.
@@ -121,8 +129,11 @@ data class DetectorConfig(
      * score yet. Initial value, TODO(M1-5): calibrate from field data.
      */
     val doubleImpulsePeakScoreFactor: Double = 1.0,
-    // ---- Speed normalization and calibration (steps 7 and 8, M2-5) ----
-    /** Speed at which the speed factor is 1. Initial value, TODO(M1-5): calibrate from field data. */
+    /**
+     * Section: Speed normalization and calibration (steps 7 and 8, M2-5).
+     *
+     * Speed at which the speed factor is 1. Initial value, TODO(M1-5): calibrate from field data.
+     */
     val referenceSpeedKmh: Double = 30.0,
     /**
      * speedFactor = (speedKmh / referenceSpeedKmh)^speedExponent, clamped. Must be 0 or more (monotonic). Initial value,
@@ -149,8 +160,11 @@ data class DetectorConfig(
         VehicleType.entries.associateWith {
             SeverityThresholds(minorPeakScore = 2.5, moderatePeakScore = 4.5, severePeakScore = 7.0)
         },
-    // ---- Speed-breaker heuristic (step 10, on device without map data) ----
-    /** The breaker shape is only considered below this speed. Initial value, TODO(M1-5): calibrate from field data. */
+    /**
+     * Section: Speed-breaker heuristic (step 10, on device without map data).
+     *
+     * The breaker shape is only considered below this speed. Initial value, TODO(M1-5): calibrate from field data.
+     */
     val speedBreakerMaxSpeedKmh: Double = 25.0,
     /** Minimum event duration of a breaker shape. Initial value, TODO(M1-5): calibrate from field data. */
     val speedBreakerMinDurationMs: Long = 300L,
@@ -164,8 +178,11 @@ data class DetectorConfig(
      * TODO(M1-5): calibrate from field data.
      */
     val speedBreakerMaxCrestFactor: Double = 2.2,
-    // ---- Event location (step 9, M2-3) ----
-    /** Fixed capacity of the queue of events waiting for the next fix. When full, the oldest is emitted early. */
+    /**
+     * Section: Event location (step 9, M2-3).
+     *
+     * Fixed capacity of the queue of events waiting for the next fix. When full, the oldest is emitted early.
+     */
     val pendingCapacity: Int = 32,
     /** A pending event is emitted after this long even if no newer fix arrived. Initial value, TODO(M1-5): calibrate from field data. */
     val pendingTimeoutMs: Long = 1_500L,
@@ -181,8 +198,9 @@ data class DetectorConfig(
     val maxInterpolationGapMs: Long = 5_000L,
     /** Minimum displacement between two fixes to compute a course from them. Initial value, TODO(M1-5): calibrate from field data. */
     val minCourseDistanceM: Double = 3.0,
-    // ---- Roughness windows (step 11, M2-4) ----
     /**
+     * Section: Roughness windows (step 11, M2-4).
+     *
      * Target window length (PRD TS-9: about 50 m). Windows close at the first fix at or beyond it. Initial value,
      * TODO(M1-5): calibrate from field data.
      */
@@ -214,8 +232,11 @@ data class DetectorConfig(
             VehicleType.CAR to 1.0,
             VehicleType.AUTO_RICKSHAW to 0.75,
         ),
-    // ---- Trip scoring (M2-8) ----
-    /** Roughness index at or below which a window scores 100. Initial value, TODO(M1-5): calibrate from field data. */
+    /**
+     * Section: Trip scoring (M2-8).
+     *
+     * Roughness index at or below which a window scores 100. Initial value, TODO(M1-5): calibrate from field data.
+     */
     val roughnessGood: Double = 0.3,
     /** Roughness index at or above which a window scores 0. Initial value, TODO(M1-5): calibrate from field data. */
     val roughnessPoor: Double = 2.0,
