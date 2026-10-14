@@ -167,36 +167,34 @@ class TripSummaryCalculatorTest {
     private fun hazard(
         id: String,
         severity: Severity,
-    ) =
-        RecordedHazard(
-            id = id,
-            tripId = "trip",
-            lat = 18.5,
-            lon = 73.85,
-            observedAtMs = START_MS,
-            severity = severity,
-            speedKmh = 30.0,
-            peakScore = 2.0,
-            headingDeg = null,
-        )
+    ) = RecordedHazard(
+        id = id,
+        tripId = "trip",
+        lat = 18.5,
+        lon = 73.85,
+        observedAtMs = START_MS,
+        severity = severity,
+        speedKmh = 30.0,
+        peakScore = 2.0,
+        headingDeg = null,
+    )
 
     private fun sample(
         id: String,
         observedAtMs: Long,
         roughness: Double,
-    ) =
-        SegmentSample(
-            id = id,
-            tripId = "trip",
-            startLat = 18.5,
-            startLon = 73.85,
-            endLat = 18.5009,
-            endLon = 73.85,
-            observedAtMs = observedAtMs,
-            lengthM = 100.0,
-            roughness = roughness,
-            speedKmh = 36.0,
-        )
+    ) = SegmentSample(
+        id = id,
+        tripId = "trip",
+        startLat = 18.5,
+        startLon = 73.85,
+        endLat = 18.5009,
+        endLon = 73.85,
+        observedAtMs = observedAtMs,
+        lengthM = 100.0,
+        roughness = roughness,
+        speedKmh = 36.0,
+    )
 
     private companion object {
         const val EARTH_RADIUS_M = 6_371_000.0

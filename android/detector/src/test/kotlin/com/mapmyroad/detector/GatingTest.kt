@@ -13,17 +13,16 @@ class GatingTest {
         handling: List<TimeInterval> = emptyList(),
         gpsDropouts: List<TimeInterval> = emptyList(),
         reportsSpeed: Boolean = true,
-    ) =
-        SyntheticTrace(
-            durationS = 14.0,
-            speedKmhAt = { speedKmh },
-            accuracyM = accuracyM,
-            inVehicle = inVehicle,
-            handling = handling,
-            gpsDropouts = gpsDropouts,
-            reportsSpeed = reportsSpeed,
-            bumps = listOf(SyntheticBump.pothole(8.0, 11.0, maxOf(speedKmh, 10.0), VehicleType.SCOOTER, 3)),
-        )
+    ) = SyntheticTrace(
+        durationS = 14.0,
+        speedKmhAt = { speedKmh },
+        accuracyM = accuracyM,
+        inVehicle = inVehicle,
+        handling = handling,
+        gpsDropouts = gpsDropouts,
+        reportsSpeed = reportsSpeed,
+        bumps = listOf(SyntheticBump.pothole(8.0, 11.0, maxOf(speedKmh, 10.0), VehicleType.SCOOTER, 3)),
+    )
 
     @Test
     fun control_severePothole_isDetected() {

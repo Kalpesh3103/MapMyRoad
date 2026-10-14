@@ -1,6 +1,7 @@
 package com.mapmyroad.ui.format
 
 import android.content.Context
+import android.text.format.DateFormat as AndroidDateFormat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
@@ -20,7 +21,7 @@ fun formatTripDateTime(
     val date = Date(epochMs)
     val locale = context.resources.configuration.locales[0]
     val dateText = DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(date)
-    val timeText = android.text.format.DateFormat.getTimeFormat(context).format(date)
+    val timeText = AndroidDateFormat.getTimeFormat(context).format(date)
     return context.getString(R.string.common_date_time, dateText, timeText)
 }
 

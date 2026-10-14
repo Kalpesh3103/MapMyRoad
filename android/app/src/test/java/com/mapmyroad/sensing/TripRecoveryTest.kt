@@ -31,21 +31,20 @@ class TripRecoveryTest {
     private fun unfinishedTrip(
         id: String,
         startedAtMs: Long,
-    ) =
-        Trip(
-            id = id,
-            vehicleType = VehicleType.SCOOTER,
-            startMode = StartMode.MANUAL,
-            startedAtMs = startedAtMs,
-            endedAtMs = null,
-            distanceM = 0.0,
-            durationS = 0,
-            smoothnessScore = null,
-            minorCount = 0,
-            moderateCount = 0,
-            severeCount = 0,
-            stopReason = null,
-        )
+    ) = Trip(
+        id = id,
+        vehicleType = VehicleType.SCOOTER,
+        startMode = StartMode.MANUAL,
+        startedAtMs = startedAtMs,
+        endedAtMs = null,
+        distanceM = 0.0,
+        durationS = 0,
+        smoothnessScore = null,
+        minorCount = 0,
+        moderateCount = 0,
+        severeCount = 0,
+        stopReason = null,
+    )
 
     private fun point(
         tripId: String,

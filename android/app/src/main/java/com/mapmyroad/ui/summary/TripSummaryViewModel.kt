@@ -63,7 +63,8 @@ class TripSummaryViewModel
                     trip == null -> TripSummaryUiState.NotFound
                     else -> TripSummaryUiState.Loaded(trip = trip, hasDeleteFailed = delete.hasFailed)
                 }
-            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), TripSummaryUiState.Loading)
+            }
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), TripSummaryUiState.Loading)
 
         fun onDeleteTrip() {
             if (deleteState.value.isDeleting) return

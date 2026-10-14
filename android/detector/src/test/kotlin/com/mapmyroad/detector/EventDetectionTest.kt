@@ -78,7 +78,8 @@ class EventDetectionTest {
                     sampleRateHz = sampleRateHz,
                     bumps = listOf(SyntheticBump.pothole(8.0, 11.0, 30.0, VehicleType.CAR, 3)),
                 )
-            assertEquals("$sampleRateHz Hz", Severity.SEVERE, trace.run(VehicleType.CAR).events.single().severity)
+            val event = trace.run(VehicleType.CAR).events.single()
+            assertEquals("$sampleRateHz Hz", Severity.SEVERE, event.severity)
         }
     }
 
@@ -116,7 +117,8 @@ class EventDetectionTest {
                         speedKmhAt = { speedKmh },
                         bumps = listOf(SyntheticBump(8.0, BumpShape.IMPACT, amplitudeMps2, 80.0, null, rearWheelFactor = 0.0)),
                     )
-                trace.run(VehicleType.CAR).events.single().peakScore
+                val event = trace.run(VehicleType.CAR).events.single()
+                event.peakScore
             }
         for (i in 1 until scores.size) assertTrue("scores $scores", scores[i] <= scores[i - 1] * 1.03)
     }
@@ -132,7 +134,8 @@ class EventDetectionTest {
                             speedKmhAt = { speedKmh },
                             bumps = listOf(SyntheticBump.pothole(8.0, target, speedKmh, VehicleType.SCOOTER, null)),
                         )
-                    trace.run(VehicleType.SCOOTER).events.single().severity
+                    val event = trace.run(VehicleType.SCOOTER).events.single()
+                    event.severity
                 }
             for (i in 1 until severities.size) assertTrue("target $target: $severities", severities[i].level >= severities[i - 1].level)
         }
@@ -176,7 +179,8 @@ class EventDetectionTest {
                     wheelbaseM = DetectorConfig.DEFAULT.wheelbaseM.getValue(vehicleType),
                     bumps = listOf(SyntheticBump.pothole(8.0, 11.0, 15.0, vehicleType, 3)),
                 )
-            assertEquals(vehicleType.name, Severity.SEVERE, trace.run(vehicleType).events.single().severity)
+            val event = trace.run(vehicleType).events.single()
+            assertEquals(vehicleType.name, Severity.SEVERE, event.severity)
         }
     }
 

@@ -307,7 +307,8 @@ class TripTrackingService : Service() {
                     (state as? TripSessionState.Recording)?.let {
                         NotificationModel(startedAtMs = it.startedAtMs, isPaused = it.pauseReason != null)
                     }
-                }.distinctUntilChanged()
+                }
+                .distinctUntilChanged()
                 .collect { model -> if (model != null) updateNotification(model) }
         }
     }

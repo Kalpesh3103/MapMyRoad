@@ -25,14 +25,16 @@ class SettingsViewModel
         private val settingsRepository: SettingsRepository,
     ) : ViewModel() {
         val uiState: StateFlow<SettingsUiState> =
-            settingsRepository.settings
+            settingsRepository
+                .settings
                 .map { settings ->
                     SettingsUiState(
                         isLoading = false,
                         vehicleType = settings.vehicleType,
                         isAutoPauseEnabled = settings.autoPauseEnabled,
                     )
-                }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), SettingsUiState())
+                }
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), SettingsUiState())
 
         fun onVehicleSelected(vehicleType: VehicleType) {
             viewModelScope.launch { settingsRepository.setVehicleType(vehicleType) }

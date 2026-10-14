@@ -21,6 +21,7 @@ class HotPathAllocationTest {
                 LocationFix(base + it * 1_000_000_000L, it * 1_000L, 18.0 + it * 1e-4, 73.0, 10f, 5f, 0f)
             }
         val threadId = Thread.currentThread().id
+
         fun feed(
             from: Int,
             to: Int,

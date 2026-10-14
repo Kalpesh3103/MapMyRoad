@@ -31,7 +31,8 @@ class AppViewModel
         tripSessionController: TripSessionController,
     ) : ViewModel() {
         val gateState: StateFlow<AppGateState> =
-            settingsRepository.settings
+            settingsRepository
+                .settings
                 .map { settings -> if (settings.onboardingCompleted) AppGateState.Main else AppGateState.Onboarding }
                 .distinctUntilChanged()
                 .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), AppGateState.Loading)

@@ -39,7 +39,8 @@ class LiveTripViewModel
         private val tripSessionController: TripSessionController,
     ) : ViewModel() {
         val uiState: StateFlow<LiveTripUiState> =
-            tripSessionController.state
+            tripSessionController
+                .state
                 .map { it.toUiState() }
                 .stateIn(
                     viewModelScope,

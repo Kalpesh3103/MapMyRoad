@@ -181,22 +181,21 @@ class TripDaoTest {
         id: String,
         startedAt: Long = 1_000L,
         endedAt: Long?,
-    ) =
-        TripEntity(
-            id = id,
-            tripToken = "token-$id",
-            vehicleType = 1,
-            startedAt = startedAt,
-            endedAt = endedAt,
-            distanceM = 0.0,
-            durationS = 0,
-            smoothnessScore = null,
-            minorCount = 0,
-            moderateCount = 0,
-            severeCount = 0,
-            startMode = "manual",
-            stopReason = null,
-        )
+    ) = TripEntity(
+        id = id,
+        tripToken = "token-$id",
+        vehicleType = 1,
+        startedAt = startedAt,
+        endedAt = endedAt,
+        distanceM = 0.0,
+        durationS = 0,
+        smoothnessScore = null,
+        minorCount = 0,
+        moderateCount = 0,
+        severeCount = 0,
+        startMode = "manual",
+        stopReason = null,
+    )
 
     private fun point(
         tripId: String,
@@ -206,33 +205,31 @@ class TripDaoTest {
     private fun hazard(
         id: String,
         tripId: String,
-    ) =
-        HazardEventLocalEntity(
-            id = id,
-            tripId = tripId,
-            lat = 18.5,
-            lon = 73.85,
-            observedAt = 1_500L,
-            severity = 2,
-            speedKmh = 30.0,
-            peakScore = 2.0,
-            headingDeg = 90,
-        )
+    ) = HazardEventLocalEntity(
+        id = id,
+        tripId = tripId,
+        lat = 18.5,
+        lon = 73.85,
+        observedAt = 1_500L,
+        severity = 2,
+        speedKmh = 30.0,
+        peakScore = 2.0,
+        headingDeg = 90,
+    )
 
     private fun sample(
         id: String,
         tripId: String,
-    ) =
-        SegmentSampleLocalEntity(
-            id = id,
-            tripId = tripId,
-            startLat = 18.5,
-            startLon = 73.85,
-            endLat = 18.5009,
-            endLon = 73.85,
-            observedAt = 1_500L,
-            lengthM = 100.0,
-            roughness = 1.0,
-            speedKmh = 36.0,
-        )
+    ) = SegmentSampleLocalEntity(
+        id = id,
+        tripId = tripId,
+        startLat = 18.5,
+        startLon = 73.85,
+        endLat = 18.5009,
+        endLon = 73.85,
+        observedAt = 1_500L,
+        lengthM = 100.0,
+        roughness = 1.0,
+        speedKmh = 36.0,
+    )
 }

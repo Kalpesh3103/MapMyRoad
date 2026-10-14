@@ -41,10 +41,12 @@ class RoughnessWindowTest {
         val windows = trace.run(VehicleType.CAR).windows
         val smooth = windows.filter { it.endElapsedNanos <= trace.baseElapsedNanos + 18_000_000_000L }.map { it.roughness }
         val rough =
-            windows.filter {
-                it.startElapsedNanos >= trace.baseElapsedNanos + 20_000_000_000L &&
-                    it.endElapsedNanos <= trace.baseElapsedNanos + 30_000_000_000L
-            }.map { it.roughness }
+            windows
+                .filter {
+                    it.startElapsedNanos >= trace.baseElapsedNanos + 20_000_000_000L &&
+                        it.endElapsedNanos <= trace.baseElapsedNanos + 30_000_000_000L
+                }
+                .map { it.roughness }
         assertTrue(smooth.isNotEmpty() && rough.isNotEmpty())
         assertTrue("smooth $smooth rough $rough", rough.min() > 3.0 * smooth.max())
     }
