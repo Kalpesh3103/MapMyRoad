@@ -104,3 +104,19 @@ Import `tools/postman/MapMyRoad.postman_collection.json` (Postman: Import, then 
 with the `local` profile, then run the folders in order. **2 Device** registers a test device and stores the tokens
 that the later folders use. Run **1 Basics** first to check the backend is up, and **7 Delete my data** last.
 Variables such as `baseUrl` and `appVersion` are on the collection (Variables tab).
+
+## M4 exit gate check (end to end)
+
+`tools/e2e/m4-exit-gate.ps1` checks that synthetic uploads from 3 devices flow through map matching and aggregation
+into the hazards API, the vector tiles and route scoring, and that "delete my data" removes the hazard again.
+It needs the local stack with Valhalla and the dev extract (`infra/scripts/load-dev-data.sh`) and the backend
+running with the `local` profile. It only runs against localhost.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\e2e\m4-exit-gate.ps1            # about 10 to 17 minutes
+powershell -ExecutionPolicy Bypass -File tools\e2e\m4-exit-gate.ps1 -KeepData  # keep the test data for a look at the map
+```
+
+Registration is rate limited to 10 calls per hour per IP (challenge and register count together, so about
+5 registrations). The script registers 4 devices. If you get `429`, wait an hour or restart the backend (limits are
+kept in memory).
