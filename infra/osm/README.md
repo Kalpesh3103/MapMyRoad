@@ -105,9 +105,12 @@ the valhalla service before the first build: with an empty data directory the im
 
 ### Windows
 
+Host-side curl checks discard response bodies with Bash redirection (`> /dev/null`), rather than
+curl's `-o /dev/null`, so native Windows curl works with MSYS path conversion disabled.
+
 The scripts are bash. Use **WSL 2** (recommended: clone the repo inside the WSL file system, enable Docker
 Desktop's WSL integration, run the scripts from the WSL shell) or **Git Bash** (the scripts set
-`MSYS_NO_PATHCONV=1` and convert bind-mount paths with `cygpath`). In PowerShell the main steps look like
+`MSYS_NO_PATHCONV=1` and convert bind-mount, Compose file, env-file and curl output paths with `cygpath`). In PowerShell the main steps look like
 this (run from `infra\`, adjust the date directory):
 
 ```powershell

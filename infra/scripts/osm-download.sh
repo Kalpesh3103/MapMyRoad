@@ -67,8 +67,9 @@ if [ "$OFFLINE" -eq 0 ]; then
     log "already downloaded and verified today: ${SRC_NAME}"
   else
     log "downloading ${SRC_NAME} (and .md5) into ${DIR}"
-    curl -fsSL --retry 3 --retry-delay 10 -o "${DIR}/${SRC_NAME}.md5" "${URL}.md5"
-    curl -fL --retry 3 --retry-delay 10 --progress-bar -o "${DIR}/${SRC_NAME}.part" "$URL"
+    # Path conversion is disabled for Docker; native Windows curl also needs host-form paths.
+    curl -fsSL --retry 3 --retry-delay 10 -o "$(host_path "${DIR}/${SRC_NAME}.md5")" "${URL}.md5"
+    curl -fL --retry 3 --retry-delay 10 --progress-bar -o "$(host_path "${DIR}/${SRC_NAME}.part")" "$URL"
     mv -f "${DIR}/${SRC_NAME}.part" "${DIR}/${SRC_NAME}"
     if ! verify_md5; then
       rm -f "${DIR}/${SRC_NAME}"

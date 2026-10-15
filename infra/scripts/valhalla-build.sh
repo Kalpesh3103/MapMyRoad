@@ -127,7 +127,7 @@ vpost() {
 
 vget_ok() {
   if [ -n "$VALHALLA_SMOKE_URL" ]; then
-    curl -fsS --max-time 5 -o /dev/null "${VALHALLA_SMOKE_URL}$1"
+    curl -fsS --max-time 5 "${VALHALLA_SMOKE_URL}$1" > /dev/null
   else
     compose_valhalla exec -T valhalla curl -fsS --max-time 5 -o /dev/null "http://127.0.0.1:8002$1"
   fi

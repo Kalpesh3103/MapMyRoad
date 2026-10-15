@@ -133,7 +133,7 @@ Exit gate: with synthetic uploads, data flows from `POST /events` through matchi
 | Status | ID | Task | Size | Depends on |
 |---|---|---|---|---|
 | [~] | M4-1 | VM or local Docker Compose: Caddy, API, PostGIS, Valhalla (`arm64` images) | M | M0-9 |
-| [~] | M4-2 | OSM extract for the pilot area, build Valhalla tiles | M | M4-1 |
+| [~] | M4-2 | OSM extract for the pilot area, build Valhalla tiles (Git Bash paths fixed; dev extract, tiles and route/matching smoke verified; pilot run pending) | M | M4-1 |
 | [~] | M4-3 | osm2pgsql import of `osm_way` and `osm_calming_point` | M | M4-1 |
 | [~] | M4-4 | Backups to object storage with tested restore, uptime monitor, Actuator metrics | S | M4-1 |
 | [~] | M4-20 | Server hardening pass (SECURITY.md section 9) and deployment workflow (DEPLOYMENT.md) | M | M4-1 |

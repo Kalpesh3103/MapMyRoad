@@ -13,7 +13,7 @@ INFRA_DIR="$(cd "${OSM_SCRIPTS_DIR}/.." && pwd)"   # repo infra/ locally, /opt/r
 OSM_CONF_DIR="${OSM_CONF_DIR:-${INFRA_DIR}/osm}"
 
 # Git Bash on Windows rewrites arguments that look like POSIX paths (/data, /custom_files) before they reach
-# docker. Disable that; harmless everywhere else.
+# docker. Disable that; use host_path for native tools that need host filesystem paths.
 export MSYS_NO_PATHCONV=1
 
 MMR_ENV="${MMR_ENV:-auto}"
@@ -94,11 +94,6 @@ env_set() {
   # cat > keeps the original file's owner and mode (600 on the VM).
   cat "$tmp" > "$ENV_FILE"
   rm -f "$tmp"
-}
-
-# Path form for `docker run -v`. Git Bash on Windows needs C:/Users/... instead of /c/Users/...
-host_path() {
-  if command -v cygpath >/dev/null 2>&1; then cygpath -m "$1"; else printf '%s' "$1"; fi
 }
 
 require_docker() {

@@ -28,7 +28,12 @@ env_require() {
   printf '%s' "$value"
 }
 
-compose() { docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" "$@"; }
+# Native Windows tools need host-form paths when MSYS path conversion is disabled.
+host_path() {
+  if command -v cygpath >/dev/null 2>&1; then cygpath -m "$1"; else printf '%s' "$1"; fi
+}
+
+compose() { docker compose -f "$(host_path "$COMPOSE_FILE")" --env-file "$(host_path "$ENV_FILE")" "$@"; }
 
 # Smoke check: GET https://$API_DOMAIN/v1/config must answer 2xx within ~150 s.
 # X-App-Version is required by the API on /v1/** (API_SPEC.md); 9999.0.0 is always above the minimum.
@@ -36,7 +41,7 @@ smoke_check() {
   local domain i
   domain="$(env_require API_DOMAIN)"
   for i in $(seq 1 30); do
-    if curl -fsS --max-time 5 -H 'X-App-Version: 9999.0.0' -o /dev/null "https://${domain}/v1/config"; then
+    if curl -fsS --max-time 5 -H 'X-App-Version: 9999.0.0' "https://${domain}/v1/config" > /dev/null; then
       log "smoke check passed (attempt ${i})"
       return 0
     fi

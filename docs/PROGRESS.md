@@ -1,7 +1,7 @@
 # Progress
 
 **Product:** MapMyRoad
-**Last updated:** 2026-10-14
+**Last updated:** 2026-10-15
 **Related:** [TASKS.md](TASKS.md), [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md), [DECISIONS.md](DECISIONS.md), [AGENTS.md](AGENTS.md)
 
 This file is the running record of where the project stands. Update it after every work session, every merged task and every milestone gate. Keep entries short and factual. Newest entries go at the top of the log.
@@ -122,6 +122,19 @@ Tick off as each is created. Do not write secrets here.
 ## 8. Log
 
 Newest first. Format: date, what changed, what is next. Link task IDs and ADRs.
+
+### 2026-10-15 (M4-2: Git Bash readiness check)
+- Confirmed Valhalla was serving `/status`; native Windows curl failed writing to `/dev/null` with MSYS path conversion disabled. Replaced host-side curl `-o /dev/null` with shell redirection in Valhalla and API smoke checks.
+- Bash syntax passed. Live Valhalla smoke passed for motorcycle, motor_scooter and auto routes and motorcycle trace_attributes against the existing dev tiles. Next: run the seed-only loader to finish local setup; pilot-area verification remains pending.
+
+### 2026-10-15 (M4-2: Git Bash Compose paths)
+- User confirmed checksum verification and dev extraction succeeded (22 s, 212M source, 1.5M extract).
+- Moved `host_path` into the shared script helpers and converted Compose `-f` and `--env-file` paths, fixing the `C:\c\Users\...` env-file error.
+- Bash syntax and `compose config --quiet` passed in Git Bash; `compose ps --status running --services` confirmed `db` is running. Next: rerun the full loader to verify import and tile build.
+
+### 2026-10-15 (M4-2: Git Bash curl output paths)
+- Converted checksum and PBF download output paths with `host_path`: disabling MSYS path conversion for Docker also affects native Windows curl.
+- Verified Bash syntax; reproduced curl error 23 on the 62-byte Geofabrik checksum and successfully downloaded it using the converted path. Full data import and Valhalla build remain pending; rerun `bash infra/scripts/load-dev-data.sh`.
 
 ### 2026-10-15 (M4 round 2: matching, aggregation, tiles, hazards, search, routes, OSM data)
 - Round 1 checked on Windows by Kalpesh: the backend starts with the `local` profile, migrations apply, and registration, upload, duplicate detection and deletion work. Whether the full `gradlew build` (integration tests with Docker) passed is not yet confirmed.
