@@ -1,0 +1,814 @@
+{
+  "info": {
+    "name": "MapMyRoad backend (local)",
+    "description": "Local testing of the MapMyRoad API (docs/API_SPEC.md). Start the backend with the `local` profile first. Run the folders in order: 2 Device stores the tokens used by the later folders. Coordinates are fixed public places in central Pune, never real user data.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "managementUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "appVersion",
+      "value": "1.0.0"
+    },
+    {
+      "key": "nonce",
+      "value": ""
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    },
+    {
+      "key": "deviceId",
+      "value": ""
+    },
+    {
+      "key": "tripToken",
+      "value": ""
+    },
+    {
+      "key": "eventId",
+      "value": ""
+    },
+    {
+      "key": "windowId",
+      "value": ""
+    },
+    {
+      "key": "observedAt",
+      "value": ""
+    },
+    {
+      "key": "hazardId",
+      "value": ""
+    },
+    {
+      "key": "hazardLat",
+      "value": ""
+    },
+    {
+      "key": "hazardLon",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1 Basics",
+      "item": [
+        {
+          "name": "Config",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/config",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "config"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Health (management port 8081)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              }
+            ],
+            "url": {
+              "raw": "{{managementUrl}}/actuator/health",
+              "host": [
+                "{{managementUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "Actuator runs on an internal port that is never published in production (ADR-0015).",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": []
+        },
+        {
+          "name": "Config without X-App-Version (expect 400)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/config",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "config"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.request.headers.remove('X-App-Version');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 INVALID_REQUEST', () => { pm.response.to.have.status(400); pm.expect(pm.response.json().code).to.eql('INVALID_REQUEST'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2 Device",
+      "item": [
+        {
+          "name": "Challenge",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/devices/challenge",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "devices",
+                "challenge"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set('nonce', pm.response.json().nonce);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register (local profile accepts any integrity token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/devices",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "devices"
+              ]
+            },
+            "description": "Run Challenge first. The nonce is single use.",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"integrityToken\": \"local-test\",\n  \"nonce\": \"{{nonce}}\",\n  \"appVersion\": \"{{appVersion}}\",\n  \"platform\": \"android\",\n  \"osApiLevel\": 34\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "const j = pm.response.json();",
+                  "pm.collectionVariables.set('accessToken', j.accessToken);",
+                  "pm.collectionVariables.set('refreshToken', j.refreshToken);",
+                  "pm.collectionVariables.set('deviceId', j.deviceId);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refresh token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/devices/token",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "devices",
+                "token"
+              ]
+            },
+            "description": "Rotates the refresh token. Sending the old one again revokes the device's tokens (reuse detection).",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.collectionVariables.set('accessToken', j.accessToken);",
+                  "pm.collectionVariables.set('refreshToken', j.refreshToken);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3 Uploads",
+      "item": [
+        {
+          "name": "Upload one event and one window",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "events"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tripToken\": \"{{tripToken}}\",\n  \"vehicleType\": \"scooter\",\n  \"events\": [\n    {\n      \"id\": \"{{eventId}}\",\n      \"lat\": 18.5204,\n      \"lon\": 73.8567,\n      \"observedAt\": \"{{observedAt}}\",\n      \"severity\": 2,\n      \"speedKmh\": 30,\n      \"peakScore\": 2.8,\n      \"headingDeg\": 90\n    }\n  ],\n  \"windows\": [\n    {\n      \"id\": \"{{windowId}}\",\n      \"startLat\": 18.5201,\n      \"startLon\": 73.8565,\n      \"endLat\": 18.5205,\n      \"endLon\": 73.8569,\n      \"observedAt\": \"{{observedAt}}\",\n      \"lengthM\": 55,\n      \"roughness\": 0.42,\n      \"speedKmh\": 28\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// New IDs and a current timestamp for each upload (the server rejects events older than 14 days).",
+                  "pm.collectionVariables.set('tripToken', pm.variables.replaceIn('{{$guid}}'));",
+                  "pm.collectionVariables.set('eventId', pm.variables.replaceIn('{{$guid}}'));",
+                  "pm.collectionVariables.set('windowId', pm.variables.replaceIn('{{$guid}}'));",
+                  "pm.collectionVariables.set('observedAt', new Date().toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('202 Accepted', () => pm.response.to.have.status(202));",
+                  "console.log(pm.response.json());"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Upload the same body again (expect duplicates)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "events"
+              ]
+            },
+            "description": "Reuses the IDs from the previous request, so nothing new is stored.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tripToken\": \"{{tripToken}}\",\n  \"vehicleType\": \"scooter\",\n  \"events\": [\n    {\n      \"id\": \"{{eventId}}\",\n      \"lat\": 18.5204,\n      \"lon\": 73.8567,\n      \"observedAt\": \"{{observedAt}}\",\n      \"severity\": 2,\n      \"speedKmh\": 30,\n      \"peakScore\": 2.8,\n      \"headingDeg\": 90\n    }\n  ],\n  \"windows\": [\n    {\n      \"id\": \"{{windowId}}\",\n      \"startLat\": 18.5201,\n      \"startLon\": 73.8565,\n      \"endLat\": 18.5205,\n      \"endLon\": 73.8569,\n      \"observedAt\": \"{{observedAt}}\",\n      \"lengthM\": 55,\n      \"roughness\": 0.42,\n      \"speedKmh\": 28\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('counted as duplicates', () => { const j = pm.response.json(); pm.expect(j.duplicates.events).to.eql(1); pm.expect(j.accepted.events).to.eql(0); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4 Hazards",
+      "item": [
+        {
+          "name": "Hazards in central Pune",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/hazards?bbox=73.82,18.49,73.88,18.54",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "hazards"
+              ],
+              "query": [
+                {
+                  "key": "bbox",
+                  "value": "73.82,18.49,73.88,18.54"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const f = pm.response.json().features || [];",
+                  "console.log(f.length + ' visible hazards');",
+                  "if (f.length) { pm.collectionVariables.set('hazardId', f[0].properties.id); pm.collectionVariables.set('hazardLon', f[0].geometry.coordinates[0]); pm.collectionVariables.set('hazardLat', f[0].geometry.coordinates[1]); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Hazard detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/hazards/{{hazardId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "hazards",
+                "{{hazardId}}"
+              ]
+            },
+            "description": "Uses the first hazard from the list request."
+          },
+          "event": []
+        },
+        {
+          "name": "Feedback: still there",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/hazards/{{hazardId}}/feedback",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "hazards",
+                "{{hazardId}}",
+                "feedback"
+              ]
+            },
+            "description": "Sends the hazard's own location, so the 50 m proximity check passes.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"confirm\",\n  \"lat\": {{hazardLat}},\n  \"lon\": {{hazardLon}},\n  \"observedAt\": \"{{observedAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('observedAt', new Date().toISOString());"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5 Map tiles",
+      "item": [
+        {
+          "name": "TileJSON",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/tiles/tilejson.json",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "tiles",
+                "tilejson.json"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": []
+        },
+        {
+          "name": "Tile z14 central Pune (binary MVT, 204 if empty)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/tiles/14/11553/7334.mvt",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "tiles",
+                "14",
+                "11553",
+                "7334.mvt"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 or 204', () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));",
+                  "console.log('tile bytes: ' + pm.response.size().body);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "6 Search and routes",
+      "item": [
+        {
+          "name": "Search: Shaniwar Wada (needs internet, public Photon)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/geocode?q=Shaniwar Wada&limit=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "geocode"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "Shaniwar Wada"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": []
+        },
+        {
+          "name": "Reverse geocode",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/geocode/reverse?lat=18.5195&lon=73.8553",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "geocode",
+                "reverse"
+              ],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "18.5195"
+                },
+                {
+                  "key": "lon",
+                  "value": "73.8553"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": []
+        },
+        {
+          "name": "Routes Shivajinagar to Swargate (needs Valhalla)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/routes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "routes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"origin\": {\n    \"lat\": 18.5308,\n    \"lon\": 73.8475\n  },\n  \"destination\": {\n    \"lat\": 18.5018,\n    \"lon\": 73.8636\n  },\n  \"vehicleType\": \"scooter\",\n  \"preference\": 0.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "7 Delete my data",
+      "item": [
+        {
+          "name": "Delete device (204, then the token stops working)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-App-Version",
+                "value": "{{appVersion}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/devices/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "devices",
+                "me"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('204 No Content', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

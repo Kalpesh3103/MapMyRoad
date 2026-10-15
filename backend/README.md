@@ -97,3 +97,10 @@ and [`docs/DEPLOYMENT.md`](../docs/DEPLOYMENT.md).
 - Database schema and migrations: [`docs/DATABASE_SCHEMA.md`](../docs/DATABASE_SCHEMA.md)
 - Conventions: [`docs/CODING_STANDARDS.md`](../docs/CODING_STANDARDS.md) section 4
 - Security: [`docs/SECURITY.md`](../docs/SECURITY.md)
+
+## Testing with Postman
+
+Import `tools/postman/MapMyRoad.postman_collection.json` (Postman: Import, then choose the file). Start the backend
+with the `local` profile, then run the folders in order. **2 Device** registers a test device and stores the tokens
+that the later folders use. Run **1 Basics** first to check the backend is up, and **7 Delete my data** last.
+Variables such as `baseUrl` and `appVersion` are on the collection (Variables tab).
