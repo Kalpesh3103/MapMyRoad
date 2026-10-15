@@ -18,7 +18,7 @@ public record MmrProperties(String supportedRegionBbox, String minSupportedAppVe
             throw new IllegalArgumentException("mmr.supported-region-bbox is required");
         }
         if (minSupportedAppVersion == null || minSupportedAppVersion.isBlank()) {
-            minSupportedAppVersion = "1.0.0";
+            minSupportedAppVersion = "0.1.0";
         }
         if (uploadsEnabled == null) {
             uploadsEnabled = Boolean.TRUE;

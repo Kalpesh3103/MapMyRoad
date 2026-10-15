@@ -295,7 +295,7 @@ exit 1
 
 ### 7.4 Updating the minimum supported version
 
-Raise `minSupportedAppVersion` only for security or breaking reasons, and only after most users have updated. The app shows a clear update screen on `426` (UI_UX_GUIDELINES.md section 8).
+Raise `minSupportedAppVersion` only for security or breaking reasons, and only after most users have updated. Never set it above the `versionName` of the newest released (or, during development, the current debug) app build, or every request from that build gets `426` and the app shows its update screen. Before the first release the app is `0.1.0`, so the default minimum is `0.1.0`. The app shows a clear update screen on `426` (UI_UX_GUIDELINES.md section 8).
 
 ## 8. Configuration and secrets
 
