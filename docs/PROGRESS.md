@@ -13,7 +13,7 @@ This file is the running record of where the project stands. Update it after eve
 | Item | Value |
 |---|---|
 | Phase | Implementation started (M0, M1-1, M2 code) |
-| Current milestone | M0 Foundations |
+| Current milestone | M5 v2 Android (M4 exit gate met locally) |
 | Current task | M0-3, M0-8, M1-1 waiting for the first build and device test on the Windows machine |
 | Next task | Build and fix (M0-3), then M0-5 Firebase project, M0-6 Play Console, M1-2 test routes |
 | Blockers | None |
@@ -28,7 +28,7 @@ This file is the running record of where the project stands. Update it after eve
 | M1 Detection data spike | In progress | 2026-10-14 | | No | M1-1 logger and tools/ converter written |
 | M2 v1 build | In progress | 2026-10-14 | | No | Code written ahead of the M1 gate, thresholds are placeholders |
 | M3 v1 closed test and release | Not started | | | No | |
-| M4 v2 backend | In progress | 2026-10-14 | | No | Rounds 1 and 2 written. Round 1 runs locally on Windows. Round 2 not yet run. M4-18 spike open. |
+| M4 v2 backend | Exit gate met (local) | 2026-10-14 | 2026-10-15 | Yes (local deployment) | Open: M4-1/M4-4/M4-20 on the VM, M4-2 pilot extract, M4-17 full test run, M4-18 spike |
 | M5 v2 Android | Not started | | | No | |
 | M6 v2 hardening and release | Not started | | | No | |
 | M7 v3 navigation and alerts | Not started | | | No | |
@@ -122,6 +122,12 @@ Tick off as each is created. Do not write secrets here.
 ## 8. Log
 
 Newest first. Format: date, what changed, what is next. Link task IDs and ADRs.
+
+### Milestone M4 gate (2026-10-15)
+- Exit gate (IMPLEMENTATION_PLAN.md M4): met on a local deployment. `tools/e2e/m4-exit-gate.ps1` passed on Windows: uploads from 3 synthetic devices were map-matched and aggregated into one visible severe hazard, the map tile at the bump grew, the same route's comfort score dropped and its severe-hazard count rose, and after "delete my data" for the 3 devices the hazard disappeared (PRD PV-3).
+- Together with the Postman run (17 requests), this covers M4-3, M4-5 to M4-16 and M4-19, now marked done.
+- Not yet met or not applicable locally: M4-1 (VM), M4-2 (pilot-area extract; dev extract works), M4-4 (backups and monitoring on the VM), M4-17 (full `gradlew build` with integration tests not yet reported), M4-20 (server hardening), M4-18 (Ferrostar spike, needs the Android side).
+- Go for M5 (v2 Android): yes. The backend API it needs is in place and verified locally.
 
 ### 2026-10-15 (M4 manual verification on Windows)
 - Kalpesh ran all 17 requests of `tools/postman/MapMyRoad.postman_collection.json` against the local stack (backend `local` profile, PostGIS, Valhalla on the dev extract, seed data). All passed: config and health, challenge, registration and refresh, upload and duplicate detection, hazards list, detail and feedback, TileJSON and an MVT tile, Photon search and reverse geocode, route candidates, delete my data.
