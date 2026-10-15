@@ -44,7 +44,9 @@ services:
       MANAGEMENT_SERVER_PORT: "8081"
       DB_URL: jdbc:postgresql://db:5432/roadquality
       PLAY_INTEGRITY_SA_FILE: /run/secrets/play_integrity_sa
-      # TODO(M4-2): VALHALLA_URL: http://valhalla:8002
+      # No depends_on for valhalla on purpose: the API answers 503 UPSTREAM_UNAVAILABLE while it is down, and
+      # an API deploy must not start Valhalla before its first tiles exist (valhalla-build.sh).
+      VALHALLA_URL: http://valhalla:8002
     secrets:
       - play_integrity_sa
     depends_on:
@@ -104,14 +106,31 @@ services:
       timeout: 5s
       retries: 10
 
-  # TODO(M4-2): Valhalla (round 2). Pin a version and verify the arm64 build first.
-  # valhalla:
-  #   image: ghcr.io/gis-ops/docker-valhalla/valhalla:<pinned-version>
-  #   restart: unless-stopped
-  #   volumes:
-  #     - /opt/rq/data/valhalla:/custom_files
-  #   networks: [internal]
-  #   mem_limit: 6g
+  valhalla:
+    # Routing and map-matching (M4-2, DEPLOYMENT.md 5). gis-ops "docker-valhalla" scripted image.
+    # VERIFY before go-live: the tag, an arm64 build for the Ampere VM (otherwise build the image on the VM),
+    # the env var names against the image README, and that curl exists in the image (smoke tests use it).
+    # TODO(M4-4): pin the digest.
+    image: ${VALHALLA_IMAGE:-ghcr.io/gis-ops/docker-valhalla/valhalla:3.5.1}   # verify tag
+    restart: unless-stopped
+    environment:
+      # Serve the tiles built by valhalla-build.sh; never rebuild on (re)start.
+      serve_tiles: "True"
+      use_tiles_ignore_pbf: "True"
+      force_rebuild: "False"
+      build_admins: "True"
+      build_time_zones: "True"
+      build_elevation: "False"
+      server_threads: "4"
+    volumes:
+      # Dated build directory under /opt/rq/data/valhalla/, written into .env by
+      # /opt/rq/scripts/valhalla-build.sh activate (zero-downtime swap, DEPLOYMENT.md 5.2).
+      - ${VALHALLA_DATA_DIR:-/opt/rq/data/valhalla/current}:/custom_files
+    # Internal network only, no published port (SECURITY.md section 9).
+    networks: [internal]
+    mem_limit: 6g
+    security_opt:
+      - no-new-privileges:true
 
 secrets:
   # Play Integrity service account key (SECURITY.md section 10). Create the file on the VM:

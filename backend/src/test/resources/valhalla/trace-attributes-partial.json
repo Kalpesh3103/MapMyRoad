@@ -1,0 +1,13 @@
+{
+  "edges": [
+    { "way_id": 222001 },
+    { "names": ["ferry without way id"] }
+  ],
+  "matched_points": [
+    { "lat": 18.530001, "lon": 73.866001, "type": "matched", "edge_index": 0, "distance_from_trace_point": 4.0 },
+    { "lat": 18.531000, "lon": 73.867000, "type": "unmatched", "distance_from_trace_point": 0.0 },
+    { "lat": 18.531500, "lon": 73.867500, "type": "matched", "edge_index": 1, "distance_from_trace_point": 2.0 },
+    { "lat": 18.532000, "lon": 73.868000, "type": "matched", "edge_index": 4294967295, "distance_from_trace_point": 1.0 },
+    { "lat": 18.532501, "lon": 73.868501, "type": "matched", "edge_index": 0, "distance_from_trace_point": 40.0 }
+  ]
+}

@@ -35,6 +35,17 @@ public class DeviceRepository {
               ON CONFLICT DO NOTHING
             """;
 
+    // Clean passes (V8) carry no device ID; they go with the device's windows by cascade, so the hazards they
+    // counted for must be recomputed too (clean_pass_count, last_clean_pass_at).
+    private static final String QUEUE_HAZARDS_FROM_CLEAN_PASSES = """
+            INSERT INTO hazard_recompute_queue (hazard_id)
+              SELECT DISTINCT cp.hazard_id
+              FROM hazard_clean_pass cp
+              JOIN segment_observation so ON so.id = cp.observation_id
+              WHERE so.device_id = :deviceId
+              ON CONFLICT DO NOTHING
+            """;
+
     /** Cascades to refresh tokens, events, observations and feedback (foreign keys ON DELETE CASCADE). */
     private static final String DELETE = "DELETE FROM device WHERE id = :deviceId";
 
@@ -66,6 +77,7 @@ public class DeviceRepository {
         MapSqlParameterSource params = new MapSqlParameterSource("deviceId", deviceId);
         jdbc.update(QUEUE_HAZARDS_FROM_EVENTS, params);
         jdbc.update(QUEUE_HAZARDS_FROM_FEEDBACK, params);
+        jdbc.update(QUEUE_HAZARDS_FROM_CLEAN_PASSES, params);
     }
 
     /** Returns the number of device rows deleted (0 or 1). */

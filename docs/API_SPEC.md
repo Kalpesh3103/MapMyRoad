@@ -21,7 +21,7 @@ Phase tags: **v2** community and route choice, **v3** navigation and alerts, **v
 | Coordinates | `lat` and `lon` in decimal degrees (WGS 84). GeoJSON uses `[lon, lat]` order as the standard requires. |
 | IDs | UUIDs. Events and windows use client-generated UUIDs. |
 | Compression | Request bodies over 1 KB should be gzip-compressed (`Content-Encoding: gzip`). Responses are gzip-compressed when the client sends `Accept-Encoding: gzip`. |
-| Required headers | `X-App-Version` (for example `1.0.3`) on every request. `Authorization: Bearer <token>` where marked. |
+| Required headers | `X-App-Version` (for example `1.0.3`) on every request except `/v1/tiles/**`, which the map library fetches on its own. `Authorization: Bearer <token>` where marked. |
 | Optional headers | `X-Request-Id` (client-generated, echoed in responses and logs), `Accept-Language` |
 | Region | The service accepts data only inside the configured supported region (see `GET /v1/config`). |
 
@@ -267,9 +267,11 @@ A single tile that contains both layers below. Empty tiles return `204`.
 | `roads` | LineString | 12 to 16 (overzoomed above) | `score` (0 to 100, higher is smoother), `samples`, `devices`, `ageDays` (days since last observation) |
 | `hazards` | Point | 13 to 18 | `id`, `sev` (1 to 3), `conf` (0 to 1), `status`, `seenDays` (days since last seen) |
 
-Visibility rules enforced by the server:
-- Road segments appear only with at least 3 samples from at least 2 different devices.
-- Hazards appear only with confidence of at least 0.3 and no suppression reason (for example, a known speed breaker).
+Visibility rules enforced by the server (one implementation shared by tiles and the hazards API):
+- Road segments appear only with at least 3 samples from at least 2 different devices, and at least 3 devices on `residential`, `service`, `living_street` and `unclassified` ways or when the way is unknown (SECURITY.md T2).
+- Ways tagged `access=private` or `access=no` are excluded (SECURITY.md 6.4).
+- Hazards appear only with confidence of at least 0.3, no suppression reason (for example, a known speed breaker), and the same device thresholds as road segments.
+- Below zoom 12 tiles are always empty (`204`). The `roads` layer is also served above zoom 16. Hazard points are snapped to a 0.00001 degree grid.
 - Fixed and stale hazards are excluded from the default tiles.
 
 Default styling suggestion for the client: score 70 or above green, 40 to 69 yellow, below 40 red, with severity also shown by icon shape so color is never the only cue.
@@ -315,6 +317,8 @@ Response `200` is a GeoJSON FeatureCollection:
 
 Used for hazard details and proximity alerts (v3). Map drawing uses tiles instead.
 
+Precision rules (SECURITY.md 6.4): coordinates have 5 decimals (about 1 m), `firstSeen` and `lastSeen` are truncated to midnight UTC (for example `2026-09-02T00:00:00Z`), and `confidence` has 2 decimals. The `bbox` area is at most 0.01 square degrees (about 0.1 by 0.1).
+
 #### `GET /v1/hazards/{id}` (auth)
 
 Returns a single GeoJSON Feature as above. `404 NOT_FOUND` if unknown.
@@ -337,6 +341,9 @@ Request:
 Rules:
 - The reported location must be within about 50 m of the hazard, otherwise `422 TOO_FAR`.
 - One vote per device per hazard. A new vote replaces the previous one.
+- `observedAt` may be at most 5 minutes in the future and at most 14 days old (`400` otherwise). The reported location is used only for the distance check and is not stored.
+- Hazards that are hidden by the privacy rules return `404`. A hazard slightly below the display confidence, or marked fixed in the last 14 days, can still receive feedback.
+- The response returns the stored values. Confidence is recomputed asynchronously within a few minutes.
 
 Response `200`:
 
@@ -374,9 +381,16 @@ Response `200`:
 
 Results are cached on the server. Errors: `503 UPSTREAM_UNAVAILABLE` when Photon cannot be reached.
 
+Rules (M4-13):
+- `q` is trimmed and whitespace runs are collapsed, then must be 3 to 200 characters. `limit` is 1 to 10. `lat` and `lon` are given together or not at all. `lang` is a language code such as `en` or `en-IN` (only the primary subtag is used). Violations give `400 INVALID_REQUEST` with `errors`.
+- Results are restricted to the supported region (`GET /v1/config`). A bias point outside the region is ignored.
+- The bias is rounded to 2 decimals (about 1 km) before it is used, so the exact user location is never sent upstream or stored. Answers are cached for 7 days, empty answers for 1 hour. `type` may be `null`.
+- A `lang` the geocoder does not support is ignored and local names are returned.
+- Rate limits are shared with `GET /v1/geocode/reverse` (section 4).
+
 #### `GET /v1/geocode/reverse` (auth)
 
-Parameters `lat` and `lon`. Returns one result in the same shape, used to name a dropped pin.
+Parameters `lat` and `lon` (required) and optional `lang`. Returns the same shape as search, `{"results": [...], "cached": ...}`, with at most one entry (empty when nothing is nearby), used to name a dropped pin. The point is rounded to 4 decimals (about 11 m) before lookup. Points outside the supported region give `422 UNSUPPORTED_REGION`.
 
 ### 5.8 Route candidates (v2)
 
@@ -430,7 +444,9 @@ Notes:
 - A candidate can carry more than one label when the same route wins several categories.
 - `coverage` tells the app how much of each route has road-quality data, so it can show a "limited data on this route" notice. A comfort score on a route with little data is not meaningful. `level` is `none`, `partial` or `good`.
 - ETA is based on typical speeds, not live traffic.
-- At most three candidates are returned. The server asks Valhalla for alternates, so sometimes only one or two distinct routes exist.
+- At most three candidates are returned. The server asks Valhalla for alternates, so sometimes only one or two distinct routes exist. Near-identical alternates (same shape, or distance and duration within 1%) are merged.
+- `preference` is optional and defaults to 0.5. Origin and destination closer than 50 m return `400 INVALID_REQUEST`.
+- Each candidate also carries its own `coverage` object. The top-level `coverage` is the coverage of the recommended candidate. `fractionWithData` has 2 decimals. `durationSec` and `distanceM` are integers.
 
 Errors: `422 UNSUPPORTED_REGION`, `422 NO_ROUTE`, `503 UPSTREAM_UNAVAILABLE`.
 

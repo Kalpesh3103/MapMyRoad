@@ -38,6 +38,8 @@ management:
         enabled: true
 
 mmr:
+  valhalla:
+    base-url: ${VALHALLA_URL:http://localhost:8002}
   # Supported region as minLon,minLat,maxLon,maxLat (API_SPEC.md section 5.1). Illustrative default around Pune.
   supported-region-bbox: ${SUPPORTED_REGION_BBOX:72.6,17.9,75.1,19.6}
   min-supported-app-version: ${MIN_SUPPORTED_APP_VERSION:1.0.0}
@@ -73,3 +75,87 @@ mmr:
     access-token-ttl: PT1H
     refresh-token-ttl: P30D
     nonce-ttl: PT5M
+  # Route candidates and comfort scoring (API_SPEC.md 5.8, ARCHITECTURE.md 8.4). Initial values; TODO(M1-5) calibrate.
+  routing:
+    max-alternates: 2
+    max-candidates: 3
+    resolve-way-ids: true
+    min-origin-destination-m: 50
+    hazard-buffer-m: 15
+    min-hazard-confidence: 0.3
+    segment-buffer-with-ways-m: 10
+    segment-buffer-without-ways-m: 8
+    min-segment-samples: 3
+    severity-weight-minor: 1
+    severity-weight-moderate: 3
+    severity-weight-severe: 8
+    roughness-weight: 20
+    normalization-factor: 3.75
+    min-normalization-length-km: 0.5
+    coverage-partial-from: 0.2
+    coverage-good-from: 0.7
+    candidate-ttl: PT15M
+    candidate-cache-max-entries: 10000
+  # Geocoding proxy to Photon (API_SPEC.md section 5.7, M4-13). The host comes only from here (SECURITY.md T12).
+  # The default is the public fair-use instance; switch PHOTON_URL to the self-hosted index when usage grows.
+  geocode:
+    enabled: ${GEOCODE_ENABLED:true}
+    base-url: ${PHOTON_URL:https://photon.komoot.io}
+    # Fair use asks for an identifying User-Agent. Replace the placeholder with a real contact before launch.
+    user-agent: ${PHOTON_USER_AGENT:MapMyRoad/0.1 (+contact placeholder)}
+    connect-timeout: PT2S
+    read-timeout: PT5S
+    cache-ttl: P7D
+    negative-cache-ttl: PT1H
+    memory-cache-size: 10000
+    upstream-max-concurrent: 4
+    upstream-queue-timeout: PT1S
+    # lang values the configured Photon accepts; others are omitted upstream. Verify against the instance in use.
+    supported-languages: en
+  # Publication thresholds for tiles and the hazards API (API_SPEC.md 5.4, SECURITY.md T2 and 6.4). Initial
+  # values. Lowering any of them weakens a privacy control and needs an ADR (AGENTS.md section 6).
+  visibility:
+    min-samples: 3
+    min-devices: 2
+    min-devices-low-traffic: 3
+    low-traffic-highways: [residential, service, living_street, unclassified]
+    excluded-access-values: [private, "no"]
+    hazard-min-confidence: 0.3
+  # Vector tiles and TileJSON (API_SPEC.md 5.4). The server cache is invalidated by time only.
+  tiles:
+    public-base-url: ${PUBLIC_BASE_URL:https://api.example.com}
+    cache-max-age-seconds: 300
+    server-cache-ttl: PT60S
+    server-cache-max-bytes: 67108864
+  # Map-matching job (M4-9, DATABASE_SCHEMA.md A6). Initial values to tune.
+  matching:
+    enabled: true
+    fixed-delay: PT60S
+    trips-per-run: 50
+    max-snap-distance-m: 25
+    max-points-per-request: 2000
+    settle-delay: PT1M
+    orphan-batch-size: 5000
+  # Aggregation, nightly refresh and recompute queue (M4-10, ARCHITECTURE.md section 8). Initial values, not
+  # measured; TODO(M1-5) calibrate the roughness values together with the app's DetectorConfig.
+  aggregation:
+    enabled: true
+    fixed-delay: PT5M
+    recompute-fixed-delay: PT2M
+    batch-size: 500
+    max-batches-per-run: 100
+    cluster-radius-m: 12
+    suppression-radius-m: 15
+    recency-half-life-days: 30
+    clean-pass-radius-m: 10
+    clean-pass-roughness-max: 0.6
+    clean-pass-event-window: PT60S
+    clean-pass-event-radius-m: 20
+    fixed-after-clean-passes: 3
+    fixed-min-devices: 2
+    stale-after-days: 60
+    ewma-alpha: 0.2
+    roughness-good: 0.3
+    roughness-poor: 2.0
+    nightly-cron: "0 15 4 * * *"
+    zone: Asia/Kolkata

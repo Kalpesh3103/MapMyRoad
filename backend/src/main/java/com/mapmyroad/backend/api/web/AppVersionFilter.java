@@ -15,6 +15,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * Enforces {@code X-App-Version} on every {@code /v1/**} request (API_SPEC.md sections 1 and 7): missing or malformed
  * gives 400 INVALID_REQUEST, older than {@code mmr.min-supported-app-version} gives 426 APP_UPDATE_REQUIRED, which the
  * app answers with its update screen. Runs before authentication so outdated apps get 426 rather than 401.
+ *
+ * <p>Map tiles ({@code /v1/tiles/**}) are exempt: MapLibre requests them on its own, they are public, aggregated
+ * and read-only, and a CDN may serve them later (API_SPEC.md 5.4).
  */
 public class AppVersionFilter extends OncePerRequestFilter {
 
@@ -28,7 +31,7 @@ public class AppVersionFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !ApiPaths.isApi(request);
+        return !ApiPaths.isApi(request) || ApiPaths.isTiles(request);
     }
 
     @Override

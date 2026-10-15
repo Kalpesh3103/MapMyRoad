@@ -172,6 +172,8 @@ CREATE INDEX segment_observation_pending_idx  ON segment_observation (received_a
 
 Ingest inserts rows with `ON CONFLICT (id) DO NOTHING`. A scheduled **matching job** takes unmatched rows, groups them by `trip_token` in time order, calls Valhalla `trace_attributes` to obtain `way_id`, snaps each point to the way and computes `bucket`, then sets `matched_at` and clears `trip_token`. If matching fails or confidence is low, `way_id` stays NULL and the item is still clustered by distance only.
 
+Processing markers (V8): an event is clustered once `hazard_id` is set. A window is counted into `road_segment_stat` and checked for clean passes once `aggregated_at` is set, in the same transaction as the aggregate change. Clean passes are stored in `hazard_clean_pass(hazard_id, observation_id, passed_at)` without a device ID; the device comes from the window row, so retention and deletion apply automatically. A hazard's position is the centroid of its remaining events, so a deleted contributor's exact point disappears after recomputation.
+
 `segment_observation` is the largest table. If it grows too large, partition it monthly by `received_at` and drop old partitions instead of deleting rows. A partitioned table needs `received_at` in the primary key, so the key becomes `(id, received_at)`.
 
 ### A7. Aggregated tables
@@ -363,7 +365,16 @@ UPDATE hazard SET confidence = LEAST(1.0,
 WHERE id = ANY(:hazard_ids);
 ```
 
-This sketch counts every device equally. ARCHITECTURE.md section 8.2 also weights each device by `trust_score`. Add that weighting (for example a trust-weighted device count) when trust scoring is implemented in M4-10.
+The sketch above counts every device equally. The implemented formula (M4-10, `ConfidenceFormula` in the backend, the only place it is computed) replaces `distinct_devices` with a trust-weighted device count, as ARCHITECTURE.md section 8.2 requires:
+
+```
+trust_weighted_devices = Σ over distinct reporting devices of min(1, device.trust_score / 0.5)
+confidence = clamp( min(1, trust_weighted_devices / 3)
+                  * 2^(-age(last_seen_at) / 30 days)
+                  * (1 + 0.5 * (confirm_count - dismiss_count) / (confirm_count + dismiss_count + 2)), 0, 1)
+```
+
+A device with the default trust score 0.5 counts as one device, a lower-trust device counts less (0.3 counts 0.6), and no device counts more than one. Events whose `device_id` was removed by retention no longer count. The SQL loads one `trust_score` per distinct device and hazard; the Java code applies the formula. Confidence is recomputed for touched hazards on every aggregation run, for queued hazards by the recompute-queue consumer, and for all hazards nightly (so the recency weight decays even without new events).
 
 **Suppress known speed breakers and crossings:**
 
@@ -458,6 +469,11 @@ INSERT INTO hazard_recompute_queue (hazard_id)
 INSERT INTO hazard_recompute_queue (hazard_id)
   SELECT DISTINCT hazard_id FROM hazard_feedback WHERE device_id = :device_id
   ON CONFLICT DO NOTHING;
+INSERT INTO hazard_recompute_queue (hazard_id)          -- clean passes (V8) go with the device's windows
+  SELECT DISTINCT cp.hazard_id FROM hazard_clean_pass cp
+  JOIN segment_observation so ON so.id = cp.observation_id
+  WHERE so.device_id = :device_id
+  ON CONFLICT DO NOTHING;
 
 DELETE FROM device WHERE id = :device_id;   -- cascades to tokens, events, observations, feedback, reports
 ```
@@ -492,7 +508,7 @@ Implications: a single free VM handles `hazard_event` comfortably. For `segment_
 | Database roles | `rq_migrator` (DDL, used by Flyway), `rq_app` (DML only, used by the API), `rq_readonly` (analysis) |
 | Network | Database not exposed publicly, reachable only on the Docker network |
 | Backups | Nightly `pg_dump -Fc` to object storage, restore test each month |
-| Flyway files | `V1__extensions_and_device.sql`, `V2__osm_reference.sql`, `V3__events_and_observations.sql`, `V4__hazards_and_segments.sql`, `V5__feedback_and_queue.sql`, `V6__geocode_cache.sql`, `V7__retention_indexes.sql` (plain indexes on `received_at`, `last_seen_at` and refresh-token `expires_at` for the retention job), then v3 and v4 files as needed |
+| Flyway files | `V1__extensions_and_device.sql`, `V2__osm_reference.sql`, `V3__events_and_observations.sql`, `V4__hazards_and_segments.sql`, `V5__feedback_and_queue.sql`, `V6__geocode_cache.sql`, `V7__retention_indexes.sql` (plain indexes on `received_at`, `last_seen_at` and refresh-token `expires_at` for the retention job), `V8__matching_and_aggregation.sql` (`segment_observation.aggregated_at`, the `hazard_clean_pass` table, partial indexes for pending work), `V9__osm_way_access.sql` (`osm_way.access`, filled by the OSM import), then v3 and v4 files as needed |
 | Test data | Seed script generating synthetic hazards and segments around a test route for local development and tests |
 
 ---

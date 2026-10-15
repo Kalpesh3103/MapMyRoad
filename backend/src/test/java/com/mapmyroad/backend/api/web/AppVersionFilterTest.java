@@ -55,4 +55,10 @@ class AppVersionFilterTest {
     void pathsOutsideTheApiAreNotChecked() throws Exception {
         mvc.perform(get("/other/ping")).andExpect(status().isOk());
     }
+
+    @Test
+    void tilesAreNotChecked() throws Exception {
+        // EchoController has no tile route, so 404 (not 400) proves the filter let the request through.
+        mvc.perform(get("/v1/tiles/13/5760/3640.mvt")).andExpect(status().isNotFound());
+    }
 }

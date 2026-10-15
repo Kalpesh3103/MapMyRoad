@@ -5,6 +5,7 @@
 #   docker compose -f docker-compose.dev.yml up -d db      # database only, run the API from the IDE or bootRun
 #   docker compose -f docker-compose.dev.yml --profile api up -d --build
 #                                                          # database + API container (run `./gradlew bootJar` in backend/ first)
+#   docker compose -f docker-compose.dev.yml up -d db valhalla   # with routing (build tiles first: osm/README.md)
 #   docker compose -f docker-compose.dev.yml down          # stop (add -v to also delete the database volume)
 #
 # Never copy production data into this stack (DEPLOYMENT.md section 15).
@@ -41,15 +42,33 @@ services:
       timeout: 5s
       retries: 20
 
-  # TODO(M4-2): Valhalla routing and map-matching with a tiny OSM extract (round 2).
-  # valhalla:
-  #   image: ghcr.io/gis-ops/docker-valhalla/valhalla:<pinned-version>   # verify arm64 support
-  #   restart: unless-stopped
-  #   volumes:
-  #     - valhalla:/custom_files
-  #   ports:
-  #     - "127.0.0.1:8002:8002"
-  #   mem_limit: 4g
+  # Valhalla routing and map-matching (M4-2) on the tiny dev extract. Started explicitly
+  # (`up -d db valhalla`) or with `--profile valhalla`, so a plain `up -d` does not start it before tiles exist.
+  # Tiles are built by infra/scripts/valhalla-build.sh (or load-dev-data.sh) into a dated directory under
+  # infra/data/valhalla/; the script writes VALHALLA_DATA_DIR into infra/.env and recreates this container.
+  # Image: gis-ops "docker-valhalla" scripted image. VERIFY the tag, the arm64 build and the env var names
+  # below against the image README before relying on them (upstream Valhalla also publishes a successor,
+  # ghcr.io/valhalla/valhalla-scripted, with the same conventions; verify before switching).
+  valhalla:
+    profiles: ["valhalla"]
+    image: ${VALHALLA_IMAGE:-ghcr.io/gis-ops/docker-valhalla/valhalla:3.5.1}   # verify tag
+    restart: unless-stopped
+    environment:
+      # Serve the tiles that valhalla-build.sh already built; never rebuild on (re)start.
+      serve_tiles: "True"
+      use_tiles_ignore_pbf: "True"
+      force_rebuild: "False"
+      # Only used if the image ever has to build here (same settings as valhalla-build.sh).
+      build_admins: "True"
+      build_time_zones: "True"
+      build_elevation: "False"
+      server_threads: "2"
+    volumes:
+      - ${VALHALLA_DATA_DIR:-./data/valhalla/current}:/custom_files
+    ports:
+      # Loopback only, for the API run with bootRun (VALHALLA_URL=http://localhost:8002) and smoke tests.
+      - "127.0.0.1:8002:8002"
+    mem_limit: 4g
 
   # Optional: the API as a container, enabled with `--profile api`. The image packs the jar built by
   # `./gradlew bootJar` (backend/Dockerfile does not compile), so build the jar first.
@@ -65,6 +84,8 @@ services:
       # Overrides the localhost URL in .env (meant for bootRun) with the service name on the Compose network.
       DB_URL: jdbc:postgresql://db:5432/roadquality
       MANAGEMENT_SERVER_PORT: "8081"
+      # Service name on the Compose network (start valhalla too, see above).
+      VALHALLA_URL: http://valhalla:8002
     depends_on:
       db:
         condition: service_healthy
@@ -93,4 +114,3 @@ services:
 
 volumes:
   pgdata: {}
-  # valhalla: {}   # TODO(M4-2)

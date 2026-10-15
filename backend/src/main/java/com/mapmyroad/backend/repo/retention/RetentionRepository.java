@@ -85,12 +85,17 @@ public class RetentionRepository {
             """;
 
     // Same as "delete my data" (DATABASE_SCHEMA.md A10): hazards influenced by the device are queued for
-    // recomputation before the cascade removes its feedback votes (and any events still linked to it).
+    // recomputation before the cascade removes its feedback votes, its clean passes (V8, through its windows) and
+    // any events still linked to it.
     private static final String ENQUEUE_HAZARDS_OF_DEVICES = """
             INSERT INTO hazard_recompute_queue (hazard_id)
             SELECT hazard_id FROM hazard_event WHERE device_id IN (:deviceIds) AND hazard_id IS NOT NULL
             UNION
             SELECT hazard_id FROM hazard_feedback WHERE device_id IN (:deviceIds)
+            UNION
+            SELECT cp.hazard_id FROM hazard_clean_pass cp
+            JOIN segment_observation so ON so.id = cp.observation_id
+            WHERE so.device_id IN (:deviceIds)
             ON CONFLICT DO NOTHING
             """;
 

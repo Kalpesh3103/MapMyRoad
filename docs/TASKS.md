@@ -133,8 +133,8 @@ Exit gate: with synthetic uploads, data flows from `POST /events` through matchi
 | Status | ID | Task | Size | Depends on |
 |---|---|---|---|---|
 | [~] | M4-1 | VM or local Docker Compose: Caddy, API, PostGIS, Valhalla (`arm64` images) | M | M0-9 |
-| [ ] | M4-2 | OSM extract for the pilot area, build Valhalla tiles | M | M4-1 |
-| [ ] | M4-3 | osm2pgsql import of `osm_way` and `osm_calming_point` | M | M4-1 |
+| [~] | M4-2 | OSM extract for the pilot area, build Valhalla tiles | M | M4-1 |
+| [~] | M4-3 | osm2pgsql import of `osm_way` and `osm_calming_point` | M | M4-1 |
 | [~] | M4-4 | Backups to object storage with tested restore, uptime monitor, Actuator metrics | S | M4-1 |
 | [~] | M4-20 | Server hardening pass (SECURITY.md section 9) and deployment workflow (DEPLOYMENT.md) | M | M4-1 |
 
@@ -146,13 +146,13 @@ Exit gate: with synthetic uploads, data flows from `POST /events` through matchi
 | [~] | M4-6 | Config endpoint | S | M4-5 |
 | [~] | M4-7 | Device challenge, registration with Play Integrity, tokens, refresh, deletion | L | M4-5 |
 | [~] | M4-8 | `POST /v1/events` with validation, idempotent insert, rejection reasons | M | M4-7 |
-| [ ] | M4-9 | Map-matching job with Valhalla `trace_attributes`, way and bucket assignment, token cleanup | L | M4-2, M4-3, M4-8 |
-| [ ] | M4-10 | Aggregation jobs: clustering, confidence, suppression, stale and fixed, segment statistics | L | M4-9 |
-| [ ] | M4-11 | Tiles endpoint (`ST_AsMVT`), TileJSON, visibility rules | M | M4-10 |
-| [ ] | M4-19 | Stricter visibility rule (3 devices) for residential, service and unclassified ways (SECURITY.md T2) | S | M4-11 |
-| [ ] | M4-12 | Hazards, hazard detail and feedback endpoints | M | M4-10 |
-| [ ] | M4-13 | Geocoding proxy with cache and rate limiting | M | M4-5 |
-| [ ] | M4-14 | Route candidates: Valhalla alternates, comfort scoring, coverage | L | M4-10, M4-2 |
+| [~] | M4-9 | Map-matching job with Valhalla `trace_attributes`, way and bucket assignment, token cleanup | L | M4-2, M4-3, M4-8 |
+| [~] | M4-10 | Aggregation jobs: clustering, confidence, suppression, stale and fixed, segment statistics | L | M4-9 |
+| [~] | M4-11 | Tiles endpoint (`ST_AsMVT`), TileJSON, visibility rules | M | M4-10 |
+| [~] | M4-19 | Stricter visibility rule (3 devices) for residential, service and unclassified ways (SECURITY.md T2) | S | M4-11 |
+| [~] | M4-12 | Hazards, hazard detail and feedback endpoints | M | M4-10 |
+| [~] | M4-13 | Geocoding proxy with cache and rate limiting | M | M4-5 |
+| [~] | M4-14 | Route candidates: Valhalla alternates, comfort scoring, coverage | L | M4-10, M4-2 |
 | [~] | M4-15 | Rate limiting, problem-detail errors, request IDs | M | M4-5 |
 | [~] | M4-16 | Retention and deletion jobs, recompute queue | M | M4-10 |
 | [~] | M4-17 | Tests: Testcontainers, WireMock, contract tests against API_SPEC examples | L | ongoing |

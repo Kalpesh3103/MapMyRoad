@@ -1,0 +1,6 @@
+{
+  "error_code": 125,
+  "error": "No costing method found for 'bogus'",
+  "status_code": 400,
+  "status": "Bad Request"
+}

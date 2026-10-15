@@ -1,3 +1,10 @@
 mmr:
   device:
     integrity-enforced: false
+  # Integration tests call MatchingJob/AggregationJob/RecomputeQueueJob/RetentionJob.runOnce() explicitly.
+  retention:
+    enabled: false
+  matching:
+    enabled: false
+  aggregation:
+    enabled: false

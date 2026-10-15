@@ -8,8 +8,8 @@ Full design and runbooks: [`docs/DEPLOYMENT.md`](../docs/DEPLOYMENT.md). Hardeni
 
 | File | Purpose |
 |---|---|
-| `docker-compose.dev.yml` | Local development: PostGIS (port 5432 on 127.0.0.1 only), optional API container (`--profile api`). Valhalla follows in M4-2. |
-| `docker-compose.yml` | Production on the VM (`/opt/rq/compose/`): Caddy (only service with published ports, 80 and 443), API, PostGIS. Valhalla follows in M4-2. |
+| `docker-compose.dev.yml` | Local development: PostGIS (port 5432 on 127.0.0.1 only), optional API container (`--profile api`), Valhalla on 127.0.0.1:8002 (`--profile valhalla` or `up -d db valhalla`). |
+| `docker-compose.yml` | Production on the VM (`/opt/rq/compose/`): Caddy (only service with published ports, 80 and 443), API, PostGIS, Valhalla (internal only). |
 | `Caddyfile` | TLS, 2 MB request limit, HSTS and `nosniff`, reverse proxy to `api:8080` with an active health check on `/v1/config`, JSON access log kept 14 days. |
 | `.env.example` | Every environment variable name with placeholders. Copy to `.env`. |
 | `scripts/backup.sh` | `pg_dump`, `age` encryption, `rclone` upload, remote retention (7 daily, 4 weekly, 3 monthly). |
@@ -17,7 +17,9 @@ Full design and runbooks: [`docs/DEPLOYMENT.md`](../docs/DEPLOYMENT.md). Hardeni
 | `scripts/deploy.sh` | Backup, remember the previous tag, pull and start a new `API_TAG`, smoke check, automatic rollback. |
 | `scripts/rollback.sh` | Return to the previous (or a given) `API_TAG` and smoke check. |
 | `scripts/common.sh` | Shared helpers sourced by the scripts above. |
-| `scripts/load-dev-data.sh` | Placeholder for the tiny OSM extract and seed data (M4-2, M4-3). |
+| `scripts/load-dev-data.sh` | Local one-shot: tiny OSM extract, osm2pgsql import, Valhalla tiles, synthetic seed data. |
+| `scripts/osm-*.sh`, `scripts/valhalla-build.sh`, `scripts/seed-dev-data.sh` | OSM data pipeline, see [`osm/README.md`](osm/README.md). |
+| `osm/` | Pilot area, osm2pgsql flex style, swap and reconcile SQL, synthetic seed SQL. |
 
 ## Local development
 
@@ -35,12 +37,19 @@ Never copy production data to a development machine.
 
 On the VM the layout is `/opt/rq/{compose,data,backups,scripts}` (DEPLOYMENT.md section 3.3). Copy
 `docker-compose.yml`, `Caddyfile` and a filled-in `.env` to `/opt/rq/compose/`, the scripts to
-`/opt/rq/scripts/`, replace `OWNER` in the image name, then use `scripts/deploy.sh <tag>` for releases.
+`/opt/rq/scripts/`, the contents of `osm/` to `/opt/rq/osm/`, replace `OWNER` in the image name, then use `scripts/deploy.sh <tag>` for releases.
 
 Health checks: the API image has no curl or wget, so Compose probes the internal readiness endpoint
 (`:8081/actuator/health/readiness`) with bash's `/dev/tcp`. Docker does not restart unhealthy
 containers by itself; Caddy's active check and the external uptime monitor on `GET /v1/config` cover
 availability. Caddy and the smoke checks send `X-App-Version`, which the API requires on `/v1/**`.
+
+## OSM data
+
+Pilot extract, Valhalla tiles, the `osm_way` / `osm_calming_point` import, the monthly refresh and the
+synthetic seed data are described in [`osm/README.md`](osm/README.md). Downloads and tiles live in
+`infra/data/` locally (git-ignored) and `/opt/rq/data/{osm,valhalla}` on the VM. Build Valhalla tiles
+before starting the valhalla service for the first time.
 
 ## Secrets
 

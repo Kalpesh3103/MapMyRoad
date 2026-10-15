@@ -1,0 +1,20 @@
+{
+  "edges": [
+    {
+      "way_id": 101
+    },
+    {
+      "way_id": 101
+    },
+    {
+      "way_id": 202
+    },
+    {
+      "way_id": 303
+    }
+  ],
+  "units": "kilometers",
+  "shape": "_tkib@wjzzkC_wQvr_@oh\\~qy@_jZ~hl@",
+  "admins": [],
+  "osm_changeset": 0
+}

@@ -6,3 +6,5 @@
 secrets/
 # Rollback bookkeeping written by scripts/deploy.sh on the VM.
 .previous_api_tag
+# Downloaded OSM extracts and built Valhalla tiles (infra/osm/README.md). Large and rebuildable.
+/data/

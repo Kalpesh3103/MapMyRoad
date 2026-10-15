@@ -1,0 +1,69 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [73.8553, 18.5195] },
+      "properties": {
+        "osm_type": "W",
+        "osm_id": 123456,
+        "osm_key": "tourism",
+        "osm_value": "attraction",
+        "type": "house",
+        "name": "Shaniwar Wada",
+        "district": "Kasba Peth",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "country": "India",
+        "countrycode": "IN"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [73.8412, 18.5167] },
+      "properties": {
+        "osm_key": "place",
+        "osm_value": "house",
+        "type": "house",
+        "street": "Fergusson College Road",
+        "housenumber": "12",
+        "locality": "Shivajinagar",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "country": "India"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [73.8567, 18.5204] },
+      "properties": {
+        "osm_key": "place",
+        "osm_value": "city",
+        "type": "city",
+        "name": "Pune",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "country": "India"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [72.8777, 19.0760] },
+      "properties": {
+        "type": "city",
+        "name": "Mumbai",
+        "state": "Maharashtra"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [73.80] },
+      "properties": { "name": "Broken geometry" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [73.81, 18.51] },
+      "properties": { "osm_value": "yes", "country": "India" }
+    }
+  ]
+}

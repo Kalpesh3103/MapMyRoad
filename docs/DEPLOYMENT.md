@@ -83,7 +83,7 @@ Only Caddy publishes ports (80 and 443). Everything else lives on the internal D
     valhalla/         Valhalla config, tiles, source extract
     osm/              Downloaded extracts
   backups/            Temporary dumps before upload
-  scripts/            backup.sh, restore.sh, refresh-osm.sh, deploy.sh
+  scripts/            backup.sh, restore.sh, osm-refresh.sh, deploy.sh
 ```
 
 ## 4. Docker Compose (sketch)
@@ -212,9 +212,9 @@ Rate limiting is applied in the application (Bucket4j). Caddy's access log reten
 
 1. Download the new extract into a new dated directory.
 2. Build new Valhalla tiles in a **new directory** while the old ones keep serving.
-3. Import the new reference tables into shadow tables (`osm_way_new`, `osm_calming_point_new`).
+3. Import the new reference tables into the staging schema `osm_import` (osm2pgsql never creates or drops the Flyway-owned `osm_way` and `osm_calming_point`).
 4. Run the **reconciliation job**: map existing `way_id` and `bucket` keys to the new ways, re-key or drop what cannot be mapped (DATABASE_SCHEMA.md A7 notes).
-5. Swap: rename shadow tables in one transaction, point the Valhalla container to the new directory, restart it, run smoke tests (`route` and `trace_attributes` examples).
+5. Swap: copy staging into `osm_way` and `osm_calming_point` in one transaction (TRUNCATE plus INSERT, a brief lock instead of renaming Flyway-owned tables, see `infra/osm/README.md`), point the Valhalla container to the new directory, restart it, run smoke tests (`route` and `trace_attributes` examples). In practice the reconciliation in step 4 runs right after this copy. Implemented by `infra/scripts/osm-refresh.sh`.
 6. Keep the previous version for a week for rollback.
 7. Log the refresh in `PROGRESS.md`.
 
@@ -470,9 +470,10 @@ Upgrade triggers are in ARCHITECTURE.md section 14. Review monthly once real use
 # one-time
 cd infra
 cp .env.example .env            # fill in local-only values
-docker compose -f docker-compose.dev.yml up -d db valhalla
-# load a tiny OSM extract (provided by a script in infra/scripts)
+docker compose -f docker-compose.dev.yml up -d db   # start the API once so Flyway creates the tables
+# tiny OSM extract, osm2pgsql import, Valhalla tiles (starts valhalla), synthetic seed data
 ./scripts/load-dev-data.sh
+# later sessions: docker compose -f docker-compose.dev.yml up -d db valhalla
 # run the backend from the IDE or: cd ../backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 ```
 

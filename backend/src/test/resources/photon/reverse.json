@@ -1,0 +1,19 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [73.85672, 18.52045] },
+      "properties": {
+        "osm_key": "highway",
+        "osm_value": "secondary",
+        "type": "street",
+        "name": "Laxmi Road",
+        "district": "Budhwar Peth",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "country": "India"
+      }
+    }
+  ]
+}

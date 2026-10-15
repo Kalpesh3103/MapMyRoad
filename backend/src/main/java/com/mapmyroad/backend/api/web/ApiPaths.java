@@ -21,6 +21,13 @@ final class ApiPaths {
                 : uri;
     }
 
+    static final String TILES_PREFIX = "/v1/tiles/";
+
+    /** True for map tiles and TileJSON, which the map library fetches directly without app headers. */
+    static boolean isTiles(HttpServletRequest request) {
+        return pathWithinApplication(request).startsWith(TILES_PREFIX);
+    }
+
     /** True for the public API ({@code /v1/**}). */
     static boolean isApi(HttpServletRequest request) {
         String path = pathWithinApplication(request);

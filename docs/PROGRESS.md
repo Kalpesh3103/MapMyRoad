@@ -28,7 +28,7 @@ This file is the running record of where the project stands. Update it after eve
 | M1 Detection data spike | In progress | 2026-10-14 | | No | M1-1 logger and tools/ converter written |
 | M2 v1 build | In progress | 2026-10-14 | | No | Code written ahead of the M1 gate, thresholds are placeholders |
 | M3 v1 closed test and release | Not started | | | No | |
-| M4 v2 backend | In progress | 2026-10-14 | | No | Round 1 (foundation and ingest) written, round 2 (matching, aggregation, tiles, routes) next |
+| M4 v2 backend | In progress | 2026-10-14 | | No | Rounds 1 and 2 written. Round 1 runs locally on Windows. Round 2 not yet run. M4-18 spike open. |
 | M5 v2 Android | Not started | | | No | |
 | M6 v2 hardening and release | Not started | | | No | |
 | M7 v3 navigation and alerts | Not started | | | No | |
@@ -122,6 +122,20 @@ Tick off as each is created. Do not write secrets here.
 ## 8. Log
 
 Newest first. Format: date, what changed, what is next. Link task IDs and ADRs.
+
+### 2026-10-15 (M4 round 2: matching, aggregation, tiles, hazards, search, routes, OSM data)
+- Round 1 checked on Windows by Kalpesh: the backend starts with the `local` profile, migrations apply, and registration, upload, duplicate detection and deletion work. Whether the full `gradlew build` (integration tests with Docker) passed is not yet confirmed.
+- M4-9: map-matching job with Valhalla `trace_attributes`, chunked traces, a 25 m snap limit, 50 m buckets, and backlog metrics.
+- M4-10: hazard clustering (12 m, same way), statistics, confidence with trust weighting (one formula in `ConfidenceFormula`), suppression near OSM traffic calming, clean passes leading to fixed status, stale after 60 days, road segment EWMA scores, a nightly refresh, and the recompute-queue consumer (a hazard with no remaining events or feedback is deleted). V8 adds processing markers and `hazard_clean_pass`.
+- M4-11 and M4-19: `GET /v1/tiles/{z}/{x}/{y}.mvt` (roads and hazards layers, ETag, 60 s server cache) and TileJSON. Visibility rules are defined once and require 3 devices on low-traffic road types. V9 adds `osm_way.access`, and `access=private` and `access=no` are excluded.
+- M4-12: hazards list and detail (coordinates at 5 decimals, dates truncated to the day) and feedback (50 m proximity check, one vote per device, location not stored).
+- M4-13: geocoding proxy to Photon with a memory and database cache. Only a rounded location (about 1 km for search, about 11 m for reverse) is sent upstream.
+- M4-14: route candidates from Valhalla alternates with comfort score, hazard counts and coverage, labeled fastest, smoothest and balanced, recommended by preference. Candidates are kept in memory for 15 minutes for v3 navigation.
+- M4-2 and M4-3: OSM pipeline scripts (Geofabrik download with md5 check, osmium extract, osm2pgsql into a staging schema followed by a transactional swap, reconciliation of segment stats, Valhalla tile build with rollback, monthly refresh) and synthetic seed data for local demos.
+- Lead fixes at integration: route scoring no longer applies a second recency decay (confidence already decays), and `/v1/tiles/**` is exempt from the `X-App-Version` check (MapLibre fetches tiles itself).
+- Verification in the dev session: the backend compiles (main and tests) against cached Spring Boot 4.1.1 jars. Agents ran their unit tests offline: geocode 56 of 56, routing 64 of 64, matching and aggregation 42 of 42, tiles and hazards all passed except local-runner limitations. No SQL has been executed and no script has run (no Docker here).
+- Values to verify on first run: the Geofabrik `western-zone` URL, the gis-ops Valhalla image tag and environment names, Valhalla request and response fields, Photon `lang` support.
+- Next: on Windows run `gradlew.bat build` with Docker, then `infra/scripts/load-dev-data.sh` (dev extract, import, Valhalla tiles, seed), then check tiles, hazards, search and routes.
 
 ### 2026-10-14 (M4 round 1: backend foundation)
 - Decisions (ADR-0018): Gradle with its own 9.2.1 wrapper in `backend/`, Spring Boot 4.1.1, Java 21, plain JDBC, an in-house rate limiter on Caffeine. Spotless deferred. Versions and artifact names were checked against the Spring Boot 4.1.1 and Testcontainers 2.0.5 BOMs in the local Gradle cache.
