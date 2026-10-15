@@ -79,3 +79,17 @@ Trunk-based development with short-lived branches, Conventional Commits and pull
 ## License
 
 TBD (proprietary until decided).
+
+## Connecting the app to a local backend
+
+Debug builds call `http://localhost:8080` by default. On a phone connected over USB, forward the port so the
+phone's `localhost` reaches your computer:
+
+```
+adb reverse tcp:8080 tcp:8080
+```
+
+The emulator can use `http://10.0.2.2:8080` instead: put `mmr.apiBaseUrl=http://10.0.2.2:8080` in
+`android/local.properties`. Plain HTTP is allowed only for `localhost`, `127.0.0.1` and `10.0.2.2`, and only in debug
+builds. Release builds are HTTPS only. Start the backend with the `local` profile (see `backend/README.md`), so any
+debug build can register without Play Integrity.

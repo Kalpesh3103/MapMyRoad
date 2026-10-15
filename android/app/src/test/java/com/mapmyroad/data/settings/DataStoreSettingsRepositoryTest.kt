@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -23,12 +24,15 @@ class DataStoreSettingsRepositoryTest {
     // DataStore does real file I/O, so it gets a real dispatcher; the scope is cancelled after each test.
     private val dataStoreScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
+    private var clockMs = 0L
+
     private val repository by lazy {
         DataStoreSettingsRepository(
             PreferenceDataStoreFactory.create(
                 scope = dataStoreScope,
                 produceFile = { File(temporaryFolder.root, "settings.preferences_pb") },
             ),
+            nowMs = { clockMs },
         )
     }
 
@@ -62,5 +66,24 @@ class DataStoreSettingsRepositoryTest {
             repository.clearAll()
 
             assertEquals(UserSettings.DEFAULT, repository.settings.first())
+        }
+
+    @Test
+    fun contributionSwitch_recordsTheOptInTime_andEveryReEnableResetsIt() =
+        runTest {
+            clockMs = 1_000L
+            repository.setContributionEnabled(true)
+            val first = repository.settings.first()
+            assertEquals(true, first.contributionEnabled)
+            assertEquals(true, first.contributionConsentShown)
+            assertEquals(1_000L, first.contributionEnabledAtMs)
+
+            clockMs = 2_000L
+            repository.setContributionEnabled(false)
+            assertNull(repository.settings.first().contributionEnabledAtMs)
+
+            clockMs = 3_000L
+            repository.setContributionEnabled(true)
+            assertEquals(3_000L, repository.settings.first().contributionEnabledAtMs)
         }
 }

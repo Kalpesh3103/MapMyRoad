@@ -7,6 +7,7 @@ import com.mapmyroad.map.GeoBounds
 import com.mapmyroad.map.MapLayerIds
 import com.mapmyroad.map.RoadBand
 import com.mapmyroad.map.RoadQualityGeoJson
+import com.mapmyroad.map.TileHazard
 import com.mapmyroad.ui.theme.RoadQualityColors
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
@@ -39,6 +40,11 @@ internal sealed interface MapHit {
 
     data class Trip(
         val tripId: String,
+    ) : MapHit
+
+    /** A hazard of the community map (M5-5), with what its tile feature says about it. */
+    data class CommunityHazard(
+        val hazard: TileHazard,
     ) : MapHit
 }
 
@@ -99,6 +105,15 @@ internal class RoadQualityLayers(
         style.getSourceAs<GeoJsonSource>(MapLayerIds.TRACK_SOURCE)?.setGeoJson(features)
     }
 
+    /** Shows or hides the personal layers (own trips and hazards) when the map mode changes. */
+    fun setVisible(
+        style: Style,
+        visible: Boolean,
+    ) {
+        if (!style.isFullyLoaded) return
+        style.setLayersVisible(MapLayerIds.personalLayerIds, visible)
+    }
+
     fun setHazards(
         style: Style,
         features: FeatureCollection,
@@ -148,42 +163,7 @@ internal class RoadQualityLayers(
 
     private fun trackLayer(band: RoadBand): LineLayer {
         val layer = LineLayer(MapLayerIds.trackLayerId(band), MapLayerIds.TRACK_SOURCE)
-        // Line width scales with zoom; poor roads are thicker, no-data roads thinner (section 12).
-        val widthFactor =
-            when (band) {
-                RoadBand.POOR -> POOR_WIDTH_FACTOR
-                RoadBand.NO_DATA -> NO_DATA_WIDTH_FACTOR
-                RoadBand.GOOD, RoadBand.FAIR -> 1f
-            }
-        val color =
-            when (band) {
-                RoadBand.GOOD -> RoadQualityColors.Good
-                RoadBand.FAIR -> RoadQualityColors.Fair
-                RoadBand.POOR -> RoadQualityColors.Poor
-                RoadBand.NO_DATA -> RoadQualityColors.NoData
-            }
-        layer.setProperties(
-            PropertyFactory.lineColor(color.toArgb()),
-            PropertyFactory.lineWidth(
-                Expression.interpolate(
-                    Expression.linear(),
-                    Expression.zoom(),
-                    Expression.stop(LOW_ZOOM, LOW_ZOOM_WIDTH * widthFactor),
-                    Expression.stop(MID_ZOOM, MID_ZOOM_WIDTH * widthFactor),
-                    Expression.stop(HIGH_ZOOM, HIGH_ZOOM_WIDTH * widthFactor),
-                ),
-            ),
-            PropertyFactory.lineJoin(Property.LINE_JOIN_ROUND),
-            PropertyFactory.lineCap(Property.LINE_CAP_ROUND),
-        )
-        // Second cue besides color (section 4.2). The dash array is in line widths and cannot be data driven,
-        // which is why there is one layer per band.
-        when (band) {
-            RoadBand.FAIR -> layer.setProperties(PropertyFactory.lineDasharray(arrayOf(2f, 1.5f)))
-            // A zero-length dash with a round cap draws a dot.
-            RoadBand.POOR -> layer.setProperties(PropertyFactory.lineDasharray(arrayOf(0f, 1.8f)))
-            RoadBand.GOOD, RoadBand.NO_DATA -> Unit
-        }
+        styleBandLine(layer, band)
         layer.setFilter(Expression.eq(Expression.get(MapLayerIds.PROP_BAND), Expression.literal(band.key)))
         return layer
     }
@@ -233,20 +213,77 @@ internal class RoadQualityLayers(
 
         const val TOUCH_TARGET_DP = 48f
 
-        const val LOW_ZOOM = 10f
-        const val MID_ZOOM = 15f
-        const val HIGH_ZOOM = 19f
-        const val LOW_ZOOM_WIDTH = 2f
-        const val MID_ZOOM_WIDTH = 5f
-        const val HIGH_ZOOM_WIDTH = 10f
-        const val POOR_WIDTH_FACTOR = 1.4f
-        const val NO_DATA_WIDTH_FACTOR = 0.6f
-
         /** A font served by the OpenFreeMap styles. Text is not drawn if the style has no such glyphs. */
         const val CLUSTER_FONT = "Noto Sans Bold"
         const val CLUSTER_TEXT_SIZE_SP = 12f
     }
 }
+
+/**
+ * Line style of a road band, shared by the personal tracks and the community roads so both modes look the same
+ * (UI_UX_GUIDELINES.md sections 4.2 and 12): color plus a second cue, solid, dashed, or dotted and thicker.
+ */
+internal fun styleBandLine(
+    layer: LineLayer,
+    band: RoadBand,
+) {
+    // Line width scales with zoom; poor roads are thicker, no-data roads thinner (section 12).
+    val widthFactor =
+        when (band) {
+            RoadBand.POOR -> POOR_WIDTH_FACTOR
+            RoadBand.NO_DATA -> NO_DATA_WIDTH_FACTOR
+            RoadBand.GOOD, RoadBand.FAIR -> 1f
+        }
+    val color =
+        when (band) {
+            RoadBand.GOOD -> RoadQualityColors.Good
+            RoadBand.FAIR -> RoadQualityColors.Fair
+            RoadBand.POOR -> RoadQualityColors.Poor
+            RoadBand.NO_DATA -> RoadQualityColors.NoData
+        }
+    layer.setProperties(
+        PropertyFactory.lineColor(color.toArgb()),
+        PropertyFactory.lineWidth(
+            Expression.interpolate(
+                Expression.linear(),
+                Expression.zoom(),
+                Expression.stop(LOW_ZOOM, LOW_ZOOM_WIDTH * widthFactor),
+                Expression.stop(MID_ZOOM, MID_ZOOM_WIDTH * widthFactor),
+                Expression.stop(HIGH_ZOOM, HIGH_ZOOM_WIDTH * widthFactor),
+            ),
+        ),
+        PropertyFactory.lineJoin(Property.LINE_JOIN_ROUND),
+        PropertyFactory.lineCap(Property.LINE_CAP_ROUND),
+    )
+    // Second cue besides color (section 4.2). The dash array is in line widths and cannot be data driven,
+    // which is why there is one layer per band.
+    when (band) {
+        RoadBand.FAIR -> layer.setProperties(PropertyFactory.lineDasharray(arrayOf(2f, 1.5f)))
+        // A zero-length dash with a round cap draws a dot.
+        RoadBand.POOR -> layer.setProperties(PropertyFactory.lineDasharray(arrayOf(0f, 1.8f)))
+        RoadBand.GOOD, RoadBand.NO_DATA -> Unit
+    }
+}
+
+/** Shows or hides layers without removing them, so sources and tiles stay loaded when switching map modes. */
+internal fun Style.setLayersVisible(
+    layerIds: List<String>,
+    visible: Boolean,
+) {
+    val visibility = PropertyFactory.visibility(if (visible) Property.VISIBLE else Property.NONE)
+    for (id in layerIds) {
+        getLayer(id)?.setProperties(visibility)
+    }
+}
+
+private const val LOW_ZOOM = 10f
+private const val MID_ZOOM = 15f
+private const val HIGH_ZOOM = 19f
+private const val LOW_ZOOM_WIDTH = 2f
+private const val MID_ZOOM_WIDTH = 5f
+private const val HIGH_ZOOM_WIDTH = 10f
+private const val POOR_WIDTH_FACTOR = 1.4f
+private const val NO_DATA_WIDTH_FACTOR = 0.6f
 
 /** Single point zoom when a camera cannot be fitted to bounds (UI_UX: street level). */
 internal const val SINGLE_POINT_ZOOM = 15.0
@@ -288,8 +325,8 @@ internal fun MapLibreMap.visibleBounds(): GeoBounds {
 
 // hasProperty + getProperty are the long-standing GeoJSON Feature API. A JSON null value is treated as absent,
 // because getStringProperty would throw on it.
-private fun Feature.hasValue(key: String): Boolean = hasProperty(key) && getProperty(key)?.isJsonNull == false
+internal fun Feature.hasValue(key: String): Boolean = hasProperty(key) && getProperty(key)?.isJsonNull == false
 
-private fun Feature.stringOrNull(key: String): String? = if (hasValue(key)) getStringProperty(key) else null
+internal fun Feature.stringOrNull(key: String): String? = if (hasValue(key)) getStringProperty(key) else null
 
-private fun Feature.numberOrNull(key: String): Number? = if (hasValue(key)) getNumberProperty(key) else null
+internal fun Feature.numberOrNull(key: String): Number? = if (hasValue(key)) getNumberProperty(key) else null

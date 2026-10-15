@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mapmyroad.R
+import com.mapmyroad.data.upload.TripUploadState
 import com.mapmyroad.detector.Severity
 import com.mapmyroad.domain.model.StopReason
 import com.mapmyroad.domain.model.Trip
@@ -63,6 +64,7 @@ import com.mapmyroad.ui.format.ScoreBand
 import com.mapmyroad.ui.format.TripFormat
 import com.mapmyroad.ui.format.rememberTripDateTime
 import com.mapmyroad.ui.map.TripRouteMap
+import com.mapmyroad.ui.summary.review.HazardReviewSection
 import com.mapmyroad.ui.theme.MapMyRoadTheme
 
 /** Trip summary (S4). */
@@ -84,10 +86,11 @@ fun TripSummaryRoute(
         onDeleteTrip = viewModel::onDeleteTrip,
         modifier = modifier,
         routeMap = { tripId, mapModifier -> TripRouteMap(tripId = tripId, modifier = mapModifier) },
+        hazardReview = { tripId, reviewModifier -> HazardReviewSection(tripId = tripId, modifier = reviewModifier) },
     )
 }
 
-/** [routeMap] is a slot so previews can render without MapLibre. */
+/** [routeMap] and [hazardReview] (S12) are slots so previews can render without MapLibre or view models. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TripSummaryScreen(
@@ -96,6 +99,7 @@ fun TripSummaryScreen(
     onDeleteTrip: () -> Unit,
     modifier: Modifier = Modifier,
     routeMap: @Composable (tripId: String, modifier: Modifier) -> Unit = { _, _ -> },
+    hazardReview: @Composable (tripId: String, modifier: Modifier) -> Unit = { _, _ -> },
 ) {
     // A confirmation dialog is fine here: the summary is never shown during a trip.
     var isDeleteDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -140,8 +144,11 @@ fun TripSummaryScreen(
                     TripSummaryContent(
                         trip = state.trip,
                         hasDeleteFailed = state.hasDeleteFailed,
+                        uploadState = state.uploadState,
+                        uploadsNeedWifi = state.uploadsNeedWifi,
                         onDeleteClick = { isDeleteDialogVisible = true },
                         routeMap = routeMap,
+                        hazardReview = hazardReview,
                     )
             }
         }
@@ -175,8 +182,11 @@ fun TripSummaryScreen(
 private fun TripSummaryContent(
     trip: Trip,
     hasDeleteFailed: Boolean,
+    uploadState: TripUploadState,
+    uploadsNeedWifi: Boolean,
     onDeleteClick: () -> Unit,
     routeMap: @Composable (tripId: String, modifier: Modifier) -> Unit,
+    hazardReview: @Composable (tripId: String, modifier: Modifier) -> Unit,
 ) {
     val locale = LocalConfiguration.current.locales[0]
     Column(
@@ -202,6 +212,13 @@ private fun TripSummaryContent(
                 value = stringResource(R.string.common_distance_km, TripFormat.distanceKm(trip.distanceM, locale)),
             )
             Fact(label = stringResource(R.string.summary_vehicle), value = stringResource(trip.vehicleType.labelRes()))
+        }
+        uploadStateRes(uploadState, uploadsNeedWifi)?.let { res ->
+            Text(
+                text = stringResource(res),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
         if (trip.stopReason == StopReason.SERVICE_KILLED) {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
@@ -233,6 +250,10 @@ private fun TripSummaryContent(
         SeverityCountRow(Severity.MINOR, R.plurals.summary_minor_count, trip.minorCount)
         SeverityCountRow(Severity.MODERATE, R.plurals.summary_moderate_count, trip.moderateCount)
         SeverityCountRow(Severity.SEVERE, R.plurals.summary_severe_count, trip.severeCount)
+        // S12: shown only to contributors for finished, recent trips that passed known hazards (ADR-0013).
+        if (trip.isFinished) {
+            hazardReview(trip.id, Modifier.fillMaxWidth())
+        }
         if (hasDeleteFailed) {
             Text(
                 text = stringResource(R.string.common_delete_failed),
@@ -249,6 +270,19 @@ private fun TripSummaryContent(
         }
     }
 }
+
+/** S4 v2 sharing line; nothing when the trip was not shared because contribution is off. */
+private fun uploadStateRes(
+    state: TripUploadState,
+    needsWifi: Boolean,
+): Int? =
+    when (state) {
+        TripUploadState.NOT_SHARED -> null
+        TripUploadState.WAITING -> if (needsWifi) R.string.upload_state_waiting_wifi else R.string.upload_state_waiting
+        TripUploadState.SHARED -> R.string.upload_state_shared
+        TripUploadState.SKIPPED -> R.string.upload_state_skipped
+        TripUploadState.FAILED -> R.string.upload_state_failed
+    }
 
 @Composable
 private fun Fact(

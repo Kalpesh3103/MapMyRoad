@@ -77,7 +77,7 @@ This document is a security design and checklist for a solo-developer project. I
 
 Summary of the design in API_SPEC.md:
 
-- **Registration:** challenge nonce, Play Integrity token, device record, access token (JWT, about 1 hour) and refresh token (opaque, about 30 days).
+- **Registration:** challenge nonce, Play Integrity token, device record, access token (JWT, about 1 hour) and refresh token (opaque, 180 days, rotated on each use; longer than the 90-day device ID detachment so a re-registration never strands deletable data, PRD PV-3).
 - **Verification:** the server verifies the integrity verdict (genuine app from Google Play, genuine device) and the nonce. Verdict requirements are configurable. Weaker verdicts may be accepted with a lower trust score rather than rejected (to avoid locking out legitimate devices on unusual hardware). *Verify* current Play Integrity API behavior and quotas.
 - **JWT:** signed with a server secret and a key ID (`kid`) so keys can rotate with overlap. Claims: device ID, issued-at, expiry, scope. No personal data.
 - **Refresh tokens:** random 256-bit values, stored only as SHA-256 hashes, rotated on each use. Reuse of a rotated token revokes the device's tokens and forces re-registration.

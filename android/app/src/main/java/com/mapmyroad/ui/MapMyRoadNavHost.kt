@@ -34,6 +34,8 @@ import androidx.navigation.navArgument
 import com.mapmyroad.ui.home.HomeRoute
 import com.mapmyroad.ui.live.LiveTripRoute
 import com.mapmyroad.ui.map.MapScreen
+import com.mapmyroad.ui.routes.RouteCandidatesRoute
+import com.mapmyroad.ui.search.SearchRoute
 import com.mapmyroad.ui.settings.AboutScreen
 import com.mapmyroad.ui.settings.BatteryGuidanceScreen
 import com.mapmyroad.ui.settings.PrivacyRoute
@@ -107,6 +109,7 @@ fun MapMyRoadNavHost(
                 MapScreen(
                     modifier = Modifier.statusBarsPadding(),
                     onOpenTripSummary = { tripId -> navController.navigate(AppRoutes.tripSummary(tripId)) },
+                    onOpenSearch = { navController.navigate(AppRoutes.SEARCH) { launchSingleTop = true } },
                 )
             }
             composable(TopLevelDestination.TRIPS.route) {
@@ -137,6 +140,30 @@ fun MapMyRoadNavHost(
             }
             composable(AppRoutes.ABOUT) {
                 AboutScreen(onBack = { navController.navigateUp() })
+            }
+            // Search and route candidates (S8) are full screen, so the bottom bar is hidden like for the live trip.
+            composable(AppRoutes.SEARCH) {
+                SearchRoute(
+                    onBack = { navController.navigateUp() },
+                    onPlaceChosen = { place ->
+                        navController.navigate(AppRoutes.routeCandidates(place.lat, place.lon, place.name))
+                    },
+                )
+            }
+            composable(
+                route = AppRoutes.ROUTE_CANDIDATES,
+                arguments =
+                    listOf(
+                        navArgument(AppRoutes.DESTINATION_LAT_ARG) { type = NavType.StringType },
+                        navArgument(AppRoutes.DESTINATION_LON_ARG) { type = NavType.StringType },
+                        navArgument(AppRoutes.DESTINATION_NAME_ARG) {
+                            type = NavType.StringType
+                            nullable = true
+                            defaultValue = null
+                        },
+                    ),
+            ) {
+                RouteCandidatesRoute(onBack = { navController.navigateUp() })
             }
         }
     }

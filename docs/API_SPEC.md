@@ -43,7 +43,7 @@ The app is anonymous. Each install registers once and receives short-lived token
 1. App asks for a **challenge** (a one-time nonce).
 2. App requests a **Play Integrity** token using that nonce.
 3. App posts the integrity token to `POST /v1/devices`. The server verifies the verdict (genuine app installed from Google Play, genuine device) and creates the device.
-4. Server returns an **access token** (JWT, about 1 hour) and a **refresh token** (opaque, about 30 days, stored hashed on the server).
+4. Server returns an **access token** (JWT, about 1 hour) and a **refresh token** (opaque, 180 days, renewed on every refresh, stored hashed on the server). The lifetime is longer than the 90-day detachment of install IDs from raw data, so an install that has to register again never leaves data still tied to its old ID out of reach of "Delete my data".
 5. When the access token expires, the app calls `POST /v1/devices/token` with the refresh token.
 
 JWT claims: `sub` (device ID), `iat`, `exp`, `scope` (`device`). No personal data is in the token.
@@ -154,7 +154,7 @@ Response `201`:
   "accessToken": "<jwt>",
   "accessExpiresInSec": 3600,
   "refreshToken": "<opaque>",
-  "refreshExpiresInSec": 2592000
+  "refreshExpiresInSec": 15552000
 }
 ```
 

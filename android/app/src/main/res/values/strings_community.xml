@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Map (S6), community mode M5-5 and search entry (S8) -->
+  <string name="community_search_hint">Where to?</string>
+  <string name="community_search_open">open search</string>
+  <string name="community_zoom_in_banner">Zoom in to see community road data</string>
+  <string name="community_limited_banner">Limited community data here</string>
+  <string name="community_map_content_description">Community map of road quality and hazards</string>
+  <!-- For example "Community map of road quality and hazards. Limited community data here." -->
+  <string name="community_map_description_format">%1$s. %2$s.</string>
+  <!-- For example "Community map of road quality and hazards. 2 severe potholes, 1 pothole, 4 minor bumps in view." -->
+  <string name="community_map_summary_format">%1$s. %2$s, %3$s, %4$s in view.</string>
+
+  <!-- Community hazard detail sheet (S7) -->
+  <string name="community_hazard_source">Reported anonymously by MapMyRoad users</string>
+  <string name="community_confidence_label">Confidence</string>
+  <string name="community_confidence_low">Low</string>
+  <string name="community_confidence_medium">Medium</string>
+  <string name="community_confidence_high">High</string>
+  <string name="community_confidence_low_explanation">Few reports so far, or some drivers found it fixed</string>
+  <string name="community_confidence_medium_explanation">Reported by several drivers</string>
+  <string name="community_confidence_high_explanation">Reported by many drivers and seen recently</string>
+  <string name="community_last_seen_label">Last seen</string>
+  <string name="community_seen_today">Seen today</string>
+  <plurals name="community_seen_days_ago">
+    <item quantity="one">Seen %d day ago</item>
+    <item quantity="other">Seen %d days ago</item>
+  </plurals>
+  <string name="community_first_seen_label">First seen</string>
+  <string name="community_confirmations_label">Confirmations</string>
+  <plurals name="community_confirmations">
+    <item quantity="one">Confirmed %d time</item>
+    <item quantity="other">Confirmed %d times</item>
+  </plurals>
+  <string name="community_status_active">Active</string>
+  <string name="community_status_stale">Not seen for a while, it may be gone</string>
+  <string name="community_status_fixed">Reported as fixed</string>
+  <string name="community_details_loading">Loading details…</string>
+  <string name="community_details_unavailable">More details aren\'t available right now</string>
+  <string name="community_feedback_after_trip">You can confirm hazards after a trip that passes them</string>
+
+  <!-- Post-trip hazard review (S12), M5-6 -->
+  <plurals name="community_review_title">
+    <item quantity="one">You passed %d hazard we know about. Still there?</item>
+    <item quantity="other">You passed %d hazards we know about. Still there?</item>
+  </plurals>
+  <string name="community_review_subtitle">Your answers are anonymous and keep the shared map up to date.</string>
+  <!-- Distance from the trip start, for example "at 2.3 km". -->
+  <string name="community_review_at_distance">at %1$s km</string>
+  <string name="community_review_still_there">Still there</string>
+  <string name="community_review_fixed">Fixed</string>
+  <!-- TalkBack names the hazard an answer button belongs to, for example "Severe pothole, at 2.3 km". -->
+  <string name="community_review_hazard_description">%1$s, %2$s</string>
+  <!-- TalkBack label of an answer button, for example "Still there: Severe pothole, at 2.3 km". -->
+  <string name="community_review_answer_description">%1$s: %2$s</string>
+  <string name="community_review_skip_all">Skip all</string>
+  <string name="community_review_sent_still_there">Thanks, marked as still there</string>
+  <string name="community_review_sent_fixed">Thanks, marked as fixed</string>
+  <string name="community_review_failed">Couldn\'t send your answer. Tap it again to retry.</string>
+  <string name="community_review_rejected">This hazard can\'t be updated any more</string>
+  <string name="community_review_thanks">Thanks, your answers help other drivers</string>
+</resources>

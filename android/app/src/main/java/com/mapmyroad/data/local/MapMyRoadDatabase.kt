@@ -4,7 +4,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 /**
- * On-device database (DATABASE_SCHEMA.md Part B). `upload_queue` arrives in v2 with schema version 2.
+ * On-device database (DATABASE_SCHEMA.md Part B). Schema version 2 (M5-4) adds `upload_queue`
+ * ([DatabaseMigrations.MIGRATION_1_2]).
  *
  * Every future version needs a [androidx.room.migration.Migration] (or an AutoMigration) and a
  * `MigrationTestHelper` test in androidTest, and the exported JSON schema in `app/schemas` must be committed
@@ -16,12 +17,15 @@ import androidx.room.RoomDatabase
         TripPointEntity::class,
         HazardEventLocalEntity::class,
         SegmentSampleLocalEntity::class,
+        UploadQueueEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 abstract class MapMyRoadDatabase : RoomDatabase() {
     abstract fun tripDao(): TripDao
+
+    abstract fun uploadDao(): UploadDao
 
     companion object {
         const val NAME = "mapmyroad.db"

@@ -61,6 +61,7 @@ What becomes easier, what becomes harder, what we must do or watch. When we shou
 | 0016 | Phase v1 ships without a backend and without in-app navigation | Accepted (planning) | 2026-10-13 |
 | 0017 | App name MapMyRoad and package ID `com.mapmyroad` | Accepted | 2026-10-14 |
 | 0018 | Backend build and stack details: Gradle, Spring Boot 4, plain JDBC, in-house rate limiter | Accepted | 2026-10-14 |
+| 0019 | M5 privacy choices: new trips only, lazy registration, 180-day refresh tokens | Accepted | 2026-10-15 |
 
 ---
 
@@ -425,6 +426,25 @@ Gradle 9.2.1 wrapper (Spring Boot 4 needs Gradle 8.14 or later), Spring Boot 4.1
 - Gradle must run on JDK 21 or newer for the backend. The Android project keeps its own Gradle 8.11.1 wrapper.
 - Revisit the limiter if the backend ever runs more than one instance (shared state would be needed, for example Redis).
 - Revisit JPA only if plain CRUD grows.
+
+## ADR-0019: M5 privacy choices for sharing and the backend identity
+- Status: Accepted
+- Date: 2026-10-15
+- Decided by: Kalpesh (new trips only), planning assistant (the rest)
+- Related: PRD CM-1, PV-1 to PV-3, API_SPEC.md 2 and 5.3, M5-1 to M5-10
+
+### Context
+M5 connects the app to the backend. Several choices decide what leaves the phone and whether "Delete my data" can always reach everything on the server.
+
+### Decision
+1. **New trips only.** Turning on "Contribute anonymously" records the time. Only trips that start after that moment are queued and uploaded. Trips recorded before, or while sharing was off, stay on the phone. Each switch-on starts a new cutoff.
+2. **Lazy registration.** The install registers with the server (Play Integrity) only when a feature that needs it is used: uploads, feedback, search and routes. Viewing the community map uses public tiles and never registers. Hazard details are fetched only for installs that are already registered.
+3. **Refresh tokens last 180 days** and rotate on every use. This is longer than the 90-day detachment of install IDs from raw data, so if an install ever has to register again (new ID), no data still tied to the old ID is out of reach of deletion.
+4. **Server first when deleting.** "Delete my data" deletes on the server before deleting on the phone. If the server cannot be reached, nothing is deleted locally and the credentials are kept, so the user can retry. An explicit "Delete only on this phone" option keeps the credentials for a later server deletion.
+5. **Recent destinations stay in memory only**, and the search bias is rounded to about 1 km on the phone before it is sent.
+
+### Consequences
+Less data for the community map at first. Every privacy statement (in-app S11, consent screen, privacy policy draft) describes these rules. Revisit point 3 if the retention periods change.
 
 ---
 

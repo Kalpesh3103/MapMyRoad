@@ -2,6 +2,10 @@
 mmr:
   device:
     integrity-enforced: false
+  # TileJSON advertises tile URLs on this base (API_SPEC.md 5.4). Locally the app reaches the backend at
+  # http://localhost:8080 through `adb reverse tcp:8080 tcp:8080`.
+  tiles:
+    public-base-url: http://localhost:8080
 logging:
   level:
     com.mapmyroad: DEBUG

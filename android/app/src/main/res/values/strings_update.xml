@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Update required (UI_UX_GUIDELINES.md section 8, API_SPEC.md section 6: 426 APP_UPDATE_REQUIRED) -->
+  <string name="update_title">Update MapMyRoad</string>
+  <string name="update_body">This version of the app no longer works with our server. Update the app to keep using the map, search, routes and sharing. Your trips stay on this phone.</string>
+  <string name="update_button">Update</string>
+</resources>

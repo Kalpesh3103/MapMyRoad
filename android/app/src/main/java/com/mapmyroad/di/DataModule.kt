@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
+import com.mapmyroad.data.local.DatabaseMigrations
 import com.mapmyroad.data.local.MapMyRoadDatabase
 import com.mapmyroad.data.local.TripDao
 import com.mapmyroad.data.repository.RoomTripRepository
@@ -47,6 +48,7 @@ abstract class DataModule {
         ): MapMyRoadDatabase =
             Room
                 .databaseBuilder(context, MapMyRoadDatabase::class.java, MapMyRoadDatabase.NAME)
+                .addMigrations(*DatabaseMigrations.ALL)
                 .build()
 
         @Provides

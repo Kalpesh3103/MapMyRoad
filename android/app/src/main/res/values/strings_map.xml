@@ -4,7 +4,6 @@
   <string name="map_mode_label">Map data</string>
   <string name="map_mode_my_trips">My trips</string>
   <string name="map_mode_community">Community</string>
-  <string name="map_mode_community_later">Arrives in a later version</string>
   <string name="map_empty_banner">Record a trip to see it here</string>
 
   <!-- Legend (UI_UX_GUIDELINES.md sections 4.2 and 4.3) -->

@@ -124,6 +124,18 @@ private class FakeSettingsRepository : SettingsRepository {
         state.update { it.copy(autoPauseEnabled = enabled) }
     }
 
+    override suspend fun setContributionEnabled(enabled: Boolean) {
+        state.update { it.copy(contributionEnabled = enabled, contributionConsentShown = it.contributionConsentShown || enabled) }
+    }
+
+    override suspend fun setUploadOnMobileData(enabled: Boolean) {
+        state.update { it.copy(uploadOnMobileData = enabled) }
+    }
+
+    override suspend fun setContributionConsentShown(shown: Boolean) {
+        state.update { it.copy(contributionConsentShown = shown) }
+    }
+
     override suspend fun clearAll() {
         state.value = UserSettings.DEFAULT
     }

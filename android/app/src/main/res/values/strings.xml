@@ -161,36 +161,56 @@
   <string name="settings_vehicle_body">Sets how bumps are detected.</string>
   <string name="settings_auto_pause">Pause when stopped</string>
   <string name="settings_auto_pause_body">Pauses recording while you are not moving, and resumes when you move again.</string>
-  <string name="settings_sharing">Contribute anonymously</string>
-  <string name="settings_sharing_later">Community sharing arrives in a later version.</string>
   <string name="settings_language_value">English</string>
   <string name="settings_language_later">Hindi and Marathi arrive in a later version.</string>
   <string name="settings_privacy_body">What is collected and how to delete it</string>
   <string name="settings_battery_body">Keep trips recording when the screen is off</string>
   <string name="settings_about_body">Version, map data and licenses</string>
 
-  <!-- Privacy and data (S11), mirrors PRD section 8.1 for v1 -->
+  <!-- Privacy and data (S11), mirrors PRD section 8.1 for v2 and the privacy policy (site/privacy-policy.md) -->
   <string name="privacy_title">Privacy and data</string>
   <string name="privacy_collected_title">What MapMyRoad collects</string>
   <string name="privacy_location_title">Location during trips</string>
-  <string name="privacy_location_body">Used to record your route and place bumps on your map. Location is only recorded while a trip is running.</string>
+  <string name="privacy_location_body">Used to record your route and place bumps on your map. Location is only recorded while a trip is running. Your full route never leaves this phone.</string>
   <string name="privacy_motion_title">Motion sensors</string>
   <string name="privacy_motion_body">Processed on your phone to detect bumps. Raw sensor data is never stored or sent.</string>
   <string name="privacy_on_phone_title">Your trips stay on this phone</string>
-  <string name="privacy_on_phone_body">In this version, trips, routes and bumps are stored only on this phone. Nothing is uploaded or shared.</string>
+  <string name="privacy_on_phone_body">Trips, routes and bumps are stored on this phone. Nothing from your trips is shared unless you turn on Contribute anonymously.</string>
+  <string name="privacy_sharing_title">If you contribute anonymously</string>
+  <string name="privacy_sharing_body">Off unless you turn it on. When it is on, the app sends the bumps and road roughness it detected, with their location. The first and last 500 m of every trip are removed on your phone first, so places like your home stay private.</string>
+  <string name="privacy_install_id_title">A random install ID</string>
+  <string name="privacy_install_id_body">When you first use an online feature (the community map, search, routes or sharing), our server gives this app a random ID. It is not linked to your phone\'s hardware, your name or an account. Shared bumps and road roughness are separated from the ID after 90 days.</string>
+  <string name="privacy_feedback_title">Your answers about potholes</string>
+  <string name="privacy_feedback_body">When you say a pothole is still there or fixed, your answer is sent to our server with the install ID.</string>
+  <string name="privacy_search_title">Search and routes</string>
+  <string name="privacy_search_body">Place searches and route requests go to our server. For search, your location is rounded to about 1 km before our server passes it on. The start and end of a route are not stored.</string>
+  <string name="privacy_map_title">Map images</string>
+  <string name="privacy_map_body">The base map comes from OpenFreeMap, which sees your IP address and the area of the map you view.</string>
   <string name="privacy_diagnostics_title">Crash reports and usage statistics</string>
   <string name="privacy_diagnostics_body">Help us fix problems and improve the app. They never contain your precise location.</string>
+  <string name="privacy_never_title">Never shared</string>
+  <string name="privacy_never_body">Raw sensor data, your full GPS traces, your name, email or phone number.</string>
   <string name="privacy_no_account_title">No account</string>
   <string name="privacy_no_account_body">No sign-in, email or phone number is needed.</string>
   <string name="privacy_policy_link">Read the privacy policy</string>
+  <string name="privacy_contribution_on">Contribute anonymously is on.</string>
+  <string name="privacy_contribution_off">Contribute anonymously is off.</string>
+  <string name="privacy_contribution_change">Change in Settings</string>
   <string name="privacy_delete_title">Delete my data</string>
-  <string name="privacy_delete_body">Removes all your trips, bumps and settings from this phone. You will see the welcome screens again.</string>
+  <string name="privacy_delete_body">Removes your trips, bumps and settings from this phone, and everything this install shared with our server. You will see the welcome screens again.</string>
   <string name="privacy_delete_blocked_by_trip">Stop the current trip before deleting your data.</string>
-  <string name="privacy_delete_button">Delete all data</string>
+  <string name="privacy_delete_button">Delete my data</string>
   <string name="privacy_deleting">Deleting…</string>
-  <string name="privacy_delete_dialog_title">Delete all data?</string>
-  <string name="privacy_delete_dialog_body">This deletes all trips, routes, recorded bumps and potholes, and settings on this phone. Nothing has been shared, so nothing is stored anywhere else. This can\'t be undone.</string>
+  <string name="privacy_delete_dialog_title">Delete your data?</string>
+  <string name="privacy_delete_dialog_body">This deletes all trips, routes, recorded bumps and potholes, and settings on this phone. This install has not shared anything, so nothing is stored on our server. This can\'t be undone.</string>
+  <string name="privacy_delete_dialog_body_shared">This deletes:\n• all trips, routes, recorded bumps and potholes on this phone\n• your settings\n• everything this install shared with our server: detected bumps, road roughness and your answers about potholes\n\nThe shared road map is recalculated without your contributions. This can\'t be undone.</string>
   <string name="privacy_delete_confirm">Delete everything</string>
+  <string name="privacy_delete_server_unreachable">We could not reach the server. Your data was not deleted. Check your connection and try again.</string>
+  <string name="privacy_delete_server_failed">The server could not delete your shared data. Your data was not deleted. Please try again later.</string>
+  <string name="privacy_delete_retry">Try again</string>
+  <string name="privacy_delete_local_only">Delete only on this phone</string>
+  <string name="privacy_delete_local_only_dialog_title">Delete only on this phone?</string>
+  <string name="privacy_delete_local_only_dialog_body">This deletes all trips, bumps and settings on this phone. What this install already shared stays on our server for now. The app keeps its install ID, so you can still delete that data later with Delete my data when you are online. This can\'t be undone.</string>
 
   <!-- Battery guidance (PRD PV-5) -->
   <string name="battery_title">Battery guidance</string>

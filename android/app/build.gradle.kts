@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)
@@ -57,6 +58,21 @@ fun loadReleaseSigning(propertiesFile: File): ReleaseSigning? {
 
 val releaseSigning: ReleaseSigning? = loadReleaseSigning(rootProject.file("keystore.properties"))
 
+// Backend base URL (M5). Debug defaults to http://localhost:8080, reached from a USB-connected phone with
+// `adb reverse tcp:8080 tcp:8080` (or from the emulator at http://10.0.2.2:8080). Override per developer with
+// `mmr.apiBaseUrl=...` in android/local.properties (git-ignored). Release uses the production API (HTTPS only,
+// the release network security config disables cleartext). The domain is still a placeholder (PROGRESS.md 7).
+fun localProperty(name: String): String? {
+    val file = rootProject.file("local.properties")
+    if (!file.exists()) return null
+    val properties = Properties()
+    file.inputStream().use { properties.load(it) }
+    return properties.getProperty(name)?.takeIf { it.isNotBlank() }
+}
+
+val debugApiBaseUrl: String = localProperty("mmr.apiBaseUrl") ?: "http://localhost:8080"
+val releaseApiBaseUrl = "https://api.example.com"
+
 android {
     namespace = "com.mapmyroad"
     compileSdk = 35
@@ -95,11 +111,13 @@ android {
             if (releaseSigning != null) {
                 signingConfig = signingConfigs.getByName("release")
             }
+            buildConfigField("String", "API_BASE_URL", "\"$releaseApiBaseUrl\"")
         }
         debug {
             // Lets debug and release builds be installed side by side on one phone.
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
+            buildConfigField("String", "API_BASE_URL", "\"$debugApiBaseUrl\"")
         }
     }
 
@@ -117,6 +135,11 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+
+    sourceSets {
+        // Exported Room schemas, read by MigrationTestHelper in instrumented migration tests (CODING_STANDARDS 3.10).
+        getByName("androidTest").assets.srcDir("$projectDir/schemas")
     }
 
     lint {
@@ -166,6 +189,21 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.serialization.json)
+
+    // Networking (M5-1). Logging is debug-only and never logs bodies or headers (AGENTS.md section 6).
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.kotlinx.serialization)
+    implementation(libs.okhttp)
+    debugImplementation(libs.okhttp.logging)
+
+    // Background uploads (M5-4) with Hilt-injected workers.
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
+
+    // Device attestation at registration (M5-2, API_SPEC.md section 2).
+    implementation(libs.play.integrity)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.play.services.location)
     implementation(libs.maplibre.android.sdk)
@@ -185,8 +223,11 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.turbine)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.okhttp.mockwebserver)
 
     androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.room.testing)
+    androidTestImplementation(libs.androidx.work.testing)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

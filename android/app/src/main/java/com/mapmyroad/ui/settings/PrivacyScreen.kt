@@ -38,7 +38,7 @@ import com.mapmyroad.ui.components.ExternalLinks
 import com.mapmyroad.ui.components.openWebPage
 import com.mapmyroad.ui.theme.MapMyRoadTheme
 
-/** Privacy and data (S11), mirroring the v1 rows of the Data safety table (PRD section 8.1). */
+/** Privacy and data (S11), mirroring the v2 rows of the Data safety table (PRD section 8.1). */
 @Composable
 fun PrivacyRoute(
     onBack: () -> Unit,
@@ -51,7 +51,10 @@ fun PrivacyRoute(
         state = state,
         onBack = onBack,
         onOpenPrivacyPolicy = { context.openWebPage(ExternalLinks.PRIVACY_POLICY_URL) },
-        onDeleteAllData = viewModel::onDeleteAllData,
+        // This screen is opened from Settings, so going back is the way to the contribution toggle (owned there).
+        onOpenSettings = onBack,
+        onDeleteMyData = viewModel::onDeleteMyData,
+        onDeleteOnlyOnThisPhone = viewModel::onDeleteOnlyOnThisPhone,
         modifier = modifier,
     )
 }
@@ -61,10 +64,13 @@ fun PrivacyScreen(
     state: PrivacyUiState,
     onBack: () -> Unit,
     onOpenPrivacyPolicy: () -> Unit,
-    onDeleteAllData: () -> Unit,
+    onOpenSettings: () -> Unit,
+    onDeleteMyData: () -> Unit,
+    onDeleteOnlyOnThisPhone: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isConfirmDialogVisible by rememberSaveable { mutableStateOf(false) }
+    var isLocalOnlyDialogVisible by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -83,8 +89,15 @@ fun PrivacyScreen(
             PrivacyStatement(R.string.privacy_location_title, R.string.privacy_location_body)
             PrivacyStatement(R.string.privacy_motion_title, R.string.privacy_motion_body)
             PrivacyStatement(R.string.privacy_on_phone_title, R.string.privacy_on_phone_body)
+            PrivacyStatement(R.string.privacy_sharing_title, R.string.privacy_sharing_body)
+            PrivacyStatement(R.string.privacy_install_id_title, R.string.privacy_install_id_body)
+            PrivacyStatement(R.string.privacy_feedback_title, R.string.privacy_feedback_body)
+            PrivacyStatement(R.string.privacy_search_title, R.string.privacy_search_body)
+            PrivacyStatement(R.string.privacy_map_title, R.string.privacy_map_body)
             PrivacyStatement(R.string.privacy_diagnostics_title, R.string.privacy_diagnostics_body)
+            PrivacyStatement(R.string.privacy_never_title, R.string.privacy_never_body)
             PrivacyStatement(R.string.privacy_no_account_title, R.string.privacy_no_account_body)
+            ContributionStatus(isEnabled = state.isContributionEnabled, onOpenSettings = onOpenSettings)
             OutlinedButton(
                 onClick = onOpenPrivacyPolicy,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
@@ -95,22 +108,19 @@ fun PrivacyScreen(
             Heading(text = stringResource(R.string.privacy_delete_title))
             Text(text = stringResource(R.string.privacy_delete_body), style = MaterialTheme.typography.bodyLarge)
             if (state.isTripActive) {
-                Text(
-                    text = stringResource(R.string.privacy_delete_blocked_by_trip),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.error,
-                )
+                ErrorText(text = stringResource(R.string.privacy_delete_blocked_by_trip))
             }
-            if (state.hasDeleteFailed) {
-                Text(
-                    text = stringResource(R.string.common_delete_failed),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
+            deleteErrorRes(state.deleteStatus)?.let { errorRes -> ErrorText(text = stringResource(errorRes)) }
             Button(
-                onClick = { isConfirmDialogVisible = true },
-                enabled = !state.isTripActive && !state.isDeleting,
+                onClick = {
+                    // A failed attempt is retried directly; the user already confirmed it.
+                    if (state.deleteStatus == DeleteStatus.IDLE) {
+                        isConfirmDialogVisible = true
+                    } else {
+                        onDeleteMyData()
+                    }
+                },
+                enabled = state.canDelete,
                 colors =
                     ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error,
@@ -118,37 +128,105 @@ fun PrivacyScreen(
                     ),
                 modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
             ) {
-                Text(
-                    text =
-                        stringResource(
-                            if (state.isDeleting) R.string.privacy_deleting else R.string.privacy_delete_button,
-                        ),
-                )
+                Text(text = stringResource(deleteButtonRes(state.deleteStatus)))
+            }
+            if (state.canDeleteOnlyOnThisPhone) {
+                OutlinedButton(
+                    onClick = { isLocalOnlyDialogVisible = true },
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                ) {
+                    Text(text = stringResource(R.string.privacy_delete_local_only))
+                }
             }
         }
     }
 
-    if (isConfirmDialogVisible) {
-        AlertDialog(
-            onDismissRequest = { isConfirmDialogVisible = false },
-            title = { Text(text = stringResource(R.string.privacy_delete_dialog_title)) },
-            text = { Text(text = stringResource(R.string.privacy_delete_dialog_body)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        isConfirmDialogVisible = false
-                        onDeleteAllData()
-                    },
-                ) {
-                    Text(text = stringResource(R.string.privacy_delete_confirm), color = MaterialTheme.colorScheme.error)
-                }
+    // Deleting is blocked during a trip, and no dialog is ever shown while one records (UI_UX_GUIDELINES.md section 6).
+    if (isConfirmDialogVisible && state.canDelete) {
+        DeleteConfirmDialog(
+            titleRes = R.string.privacy_delete_dialog_title,
+            bodyRes = if (state.isRegistered) R.string.privacy_delete_dialog_body_shared else R.string.privacy_delete_dialog_body,
+            onConfirm = {
+                isConfirmDialogVisible = false
+                onDeleteMyData()
             },
-            dismissButton = {
-                TextButton(onClick = { isConfirmDialogVisible = false }) {
-                    Text(text = stringResource(R.string.common_cancel))
-                }
-            },
+            onDismiss = { isConfirmDialogVisible = false },
         )
+    }
+    if (isLocalOnlyDialogVisible && state.canDeleteOnlyOnThisPhone) {
+        DeleteConfirmDialog(
+            titleRes = R.string.privacy_delete_local_only_dialog_title,
+            bodyRes = R.string.privacy_delete_local_only_dialog_body,
+            onConfirm = {
+                isLocalOnlyDialogVisible = false
+                onDeleteOnlyOnThisPhone()
+            },
+            onDismiss = { isLocalOnlyDialogVisible = false },
+        )
+    }
+}
+
+private fun deleteErrorRes(status: DeleteStatus): Int? =
+    when (status) {
+        DeleteStatus.SERVER_UNREACHABLE -> R.string.privacy_delete_server_unreachable
+        DeleteStatus.SERVER_FAILED -> R.string.privacy_delete_server_failed
+        DeleteStatus.LOCAL_FAILED -> R.string.common_delete_failed
+        DeleteStatus.IDLE, DeleteStatus.DELETING -> null
+    }
+
+private fun deleteButtonRes(status: DeleteStatus): Int =
+    when (status) {
+        DeleteStatus.IDLE -> R.string.privacy_delete_button
+        DeleteStatus.DELETING -> R.string.privacy_deleting
+        DeleteStatus.SERVER_UNREACHABLE, DeleteStatus.SERVER_FAILED, DeleteStatus.LOCAL_FAILED -> R.string.privacy_delete_retry
+    }
+
+@Composable
+private fun DeleteConfirmDialog(
+    titleRes: Int,
+    bodyRes: Int,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(titleRes)) },
+        text = { Text(text = stringResource(bodyRes)) },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(text = stringResource(R.string.privacy_delete_confirm), color = MaterialTheme.colorScheme.error)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.common_cancel))
+            }
+        },
+    )
+}
+
+@Composable
+private fun ErrorText(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.error,
+    )
+}
+
+@Composable
+private fun ContributionStatus(
+    isEnabled: Boolean,
+    onOpenSettings: () -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(
+            text = stringResource(if (isEnabled) R.string.privacy_contribution_on else R.string.privacy_contribution_off),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        TextButton(onClick = onOpenSettings, modifier = Modifier.heightIn(min = 48.dp)) {
+            Text(text = stringResource(R.string.privacy_contribution_change))
+        }
     }
 }
 
@@ -174,10 +252,11 @@ private fun PrivacyStatement(
 
 @Preview(name = "Light", showBackground = true)
 @Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Font 200%", showBackground = true, fontScale = 2f)
 @Composable
 private fun PrivacyScreenPreview() {
     MapMyRoadTheme {
-        PrivacyScreen(state = PrivacyUiState(), onBack = {}, onOpenPrivacyPolicy = {}, onDeleteAllData = {})
+        PreviewPrivacyScreen(state = PrivacyUiState(isRegistered = true, isContributionEnabled = true))
     }
 }
 
@@ -185,11 +264,26 @@ private fun PrivacyScreenPreview() {
 @Composable
 private fun PrivacyScreenRecordingPreview() {
     MapMyRoadTheme {
-        PrivacyScreen(
-            state = PrivacyUiState(isTripActive = true),
-            onBack = {},
-            onOpenPrivacyPolicy = {},
-            onDeleteAllData = {},
-        )
+        PreviewPrivacyScreen(state = PrivacyUiState(isTripActive = true))
     }
+}
+
+@Preview(name = "Server unreachable", showBackground = true)
+@Composable
+private fun PrivacyScreenServerUnreachablePreview() {
+    MapMyRoadTheme {
+        PreviewPrivacyScreen(state = PrivacyUiState(isRegistered = true, deleteStatus = DeleteStatus.SERVER_UNREACHABLE))
+    }
+}
+
+@Composable
+private fun PreviewPrivacyScreen(state: PrivacyUiState) {
+    PrivacyScreen(
+        state = state,
+        onBack = {},
+        onOpenPrivacyPolicy = {},
+        onOpenSettings = {},
+        onDeleteMyData = {},
+        onDeleteOnlyOnThisPhone = {},
+    )
 }

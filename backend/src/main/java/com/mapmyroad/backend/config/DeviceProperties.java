@@ -37,7 +37,7 @@ public record DeviceProperties(
             accessTokenTtl = Duration.ofHours(1);
         }
         if (refreshTokenTtl == null) {
-            refreshTokenTtl = Duration.ofDays(30);
+            refreshTokenTtl = Duration.ofDays(180);
         }
         if (nonceTtl == null) {
             nonceTtl = Duration.ofMinutes(5);

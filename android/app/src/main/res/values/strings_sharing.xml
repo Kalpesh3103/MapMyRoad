@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Contribution consent (UI_UX_GUIDELINES.md section 13, S11), M5-3. Mirrors PRD section 8.1. -->
+  <string name="sharing_consent_title">Share road data anonymously</string>
+  <string name="sharing_consent_intro">Help everyone find smoother roads. If you agree, MapMyRoad shares what it detects on your trips. You can change this at any time in Settings.</string>
+  <string name="sharing_consent_shared_title">What is shared</string>
+  <string name="sharing_consent_shared_body">Bumps and potholes detected on your trips, and how rough each stretch of road was, with location, time, speed and vehicle type. Only trips you record from now on are shared. Trips you already recorded stay on this phone.</string>
+  <string name="sharing_consent_trim_title">Your trip ends stay private</string>
+  <string name="sharing_consent_trim_body">The first and last 500 m of every trip are removed on this phone before anything is sent, so places where your trips start and end, like home or work, are not shared. Trips shorter than about 1 km are not shared at all.</string>
+  <string name="sharing_consent_not_shared_title">What is never shared</string>
+  <string name="sharing_consent_not_shared_body">Raw sensor data, the full route of your trips, and your name, email or phone number. No account is needed.</string>
+  <string name="sharing_consent_id_title">A random install ID</string>
+  <string name="sharing_consent_id_body">Shared data is linked to a random ID created for this install, not to you or to your phone\'s hardware. It is used to remove duplicates, prevent abuse and delete your data.</string>
+  <string name="sharing_consent_control_title">You stay in control</string>
+  <string name="sharing_consent_control_body">Uploads use Wi-Fi only, unless you allow mobile data. You can stop sharing at any time, and trips you record while sharing is off are never shared. Delete my data in Privacy and data removes what was shared from this install.</string>
+  <string name="sharing_consent_accept">Share anonymously</string>
+  <string name="sharing_consent_decline">Not now</string>
+  <string name="sharing_consent_close">Close</string>
+
+  <!-- Settings, Sharing group (S10) -->
+  <string name="sharing_contribute">Contribute anonymously</string>
+  <string name="sharing_contribute_body_off">Share bumps and road roughness from the trips you record from now on, to improve the community map.</string>
+  <string name="sharing_contribute_body_on">Sharing bumps and road roughness. The start and end of each trip are never shared.</string>
+  <string name="sharing_mobile_data">Upload on mobile data</string>
+  <string name="sharing_mobile_data_body">When off, uploads wait for Wi-Fi.</string>
+  <string name="sharing_mobile_data_disabled_body">Available when you contribute.</string>
+  <string name="sharing_what_is_shared">What is shared</string>
+  <string name="sharing_what_is_shared_body">How trips are trimmed and what never leaves your phone</string>
+
+  <!-- Upload status (Settings and the trip summary line, S4) -->
+  <plurals name="upload_waiting_trips_wifi">
+    <item quantity="one">%d trip waiting for Wi-Fi to share</item>
+    <item quantity="other">%d trips waiting for Wi-Fi to share</item>
+  </plurals>
+  <plurals name="upload_waiting_trips">
+    <item quantity="one">%d trip waiting to share</item>
+    <item quantity="other">%d trips waiting to share</item>
+  </plurals>
+  <string name="upload_state_shared">Shared anonymously</string>
+  <string name="upload_state_waiting_wifi">Waiting for Wi-Fi to share</string>
+  <string name="upload_state_waiting">Waiting to share</string>
+  <string name="upload_state_skipped">Not shared: too short to share without revealing where it started and ended</string>
+  <string name="upload_state_failed">Could not be shared</string>
+</resources>

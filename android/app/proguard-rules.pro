@@ -8,3 +8,8 @@
 # mapping file uploaded to Crashlytics, SECURITY.md section 8). The original source file name is hidden.
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
+
+# WorkManager (M5-4). WorkManager stores the worker class name and HiltWorkerFactory looks the worker up by its
+# source name, so worker classes must keep their names. The libraries' own rules should already cover this; it is
+# repeated here because an obfuscated name would silently stop uploads in release builds only.
+-keepnames class * extends androidx.work.ListenableWorker

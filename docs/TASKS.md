@@ -164,16 +164,16 @@ Exit gate: a tester can contribute a real trip, see it on the shared map, get ro
 
 | Status | ID | Task | Size | Pri | Depends on |
 |---|---|---|---|---|---|
-| [ ] | M5-1 | API client (Retrofit), token handling, retry rules, update gate | M | | M4-7 |
-| [ ] | M5-2 | Device registration with Play Integrity | M | | M5-1 |
-| [ ] | M5-3 | Contribution opt-in screen and settings | S | | M5-2 |
-| [ ] | M5-4 | Upload worker: trimming, batching, backoff, unmetered default | L | | M4-8, M5-3 |
-| [ ] | M5-5 | Shared map layers from tiles with accessible styling | L | | M4-11 |
-| [ ] | M5-6 | Hazard detail sheet and post-trip hazard review (feedback only when stopped, UI_UX_GUIDELINES.md section 6) | M | | M4-12, M5-5 |
-| [ ] | M5-7 | Destination search UI with debounce and caching | M | | M4-13 |
-| [ ] | M5-8 | Route candidates screen: three options, scores, hazards, slider, coverage notice | L | | M4-14 |
-| [ ] | M5-9 | "Open in Google Maps" hand-off | S | | M5-8 |
-| [ ] | M5-10 | "Delete my data" end to end | M | | M4-7 |
+| [~] | M5-1 | API client (Retrofit), token handling, retry rules, update gate | M | | M4-7 |
+| [~] | M5-2 | Device registration with Play Integrity | M | | M5-1 |
+| [~] | M5-3 | Contribution opt-in screen and settings | S | | M5-2 |
+| [~] | M5-4 | Upload worker: trimming, batching, backoff, unmetered default | L | | M4-8, M5-3 |
+| [~] | M5-5 | Shared map layers from tiles with accessible styling | L | | M4-11 |
+| [~] | M5-6 | Hazard detail sheet and post-trip hazard review (feedback only when stopped, UI_UX_GUIDELINES.md section 6) | M | | M4-12, M5-5 |
+| [~] | M5-7 | Destination search UI with debounce and caching | M | | M4-13 |
+| [~] | M5-8 | Route candidates screen: three options, scores, hazards, slider, coverage notice | L | | M4-14 |
+| [~] | M5-9 | "Open in Google Maps" hand-off | S | | M5-8 |
+| [~] | M5-10 | "Delete my data" end to end | M | | M4-7 |
 | [ ] | M5-11 | Hindi and Marathi strings, native-speaker review | M | | |
 | [ ] | M5-12 | Vehicle health hints and contribution stats | S | P2 | M5-4 |
 

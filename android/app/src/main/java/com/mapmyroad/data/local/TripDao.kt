@@ -84,6 +84,9 @@ abstract class TripDao {
     @Query("DELETE FROM segment_sample_local")
     abstract suspend fun deleteAllSamples()
 
+    @Query("DELETE FROM upload_queue")
+    abstract suspend fun deleteAllUploadQueueRows()
+
     @Query("DELETE FROM trip")
     abstract suspend fun deleteAllTripRows()
 
@@ -96,6 +99,7 @@ abstract class TripDao {
         deleteAllPoints()
         deleteAllHazards()
         deleteAllSamples()
+        deleteAllUploadQueueRows()
         deleteAllTripRows()
     }
 

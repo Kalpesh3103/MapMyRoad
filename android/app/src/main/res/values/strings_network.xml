@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Backend error messages (M5-1), one per ApiError category. data/remote/ApiErrorMessages.kt maps them. -->
+<resources>
+  <string name="net_error_offline">No connection. Please try again when you are online.</string>
+  <string name="net_error_unauthorized">The connection to MapMyRoad was reset. Please try again.</string>
+  <string name="net_error_update_required">Please update MapMyRoad to keep using community features.</string>
+  <string name="net_error_integrity">This device could not be verified. Community features need the app from Google Play.</string>
+  <string name="net_error_rate_limited">Too many requests. Please wait a little and try again.</string>
+  <string name="net_error_unavailable">This service is temporarily unavailable. Please try again later.</string>
+  <string name="net_error_not_found">This item no longer exists.</string>
+  <string name="net_error_rejected">The request could not be completed.</string>
+  <string name="net_error_server">Something went wrong on the MapMyRoad server. Please try again later.</string>
+</resources>

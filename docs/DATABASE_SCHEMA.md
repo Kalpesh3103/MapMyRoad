@@ -525,9 +525,9 @@ Room stores everything the app needs offline. Raw sensor samples are **not** sto
 | `trip_point` | `id` INTEGER PK autoincrement, `trip_id` TEXT FK (cascade delete), `t` INT (epoch ms), `lat` REAL, `lon` REAL, `speed_mps` REAL, `accuracy_m` REAL, `roughness` REAL NULL |
 | `hazard_event_local` | `id` TEXT (UUID) PK, `trip_id` TEXT FK (cascade delete), `lat` REAL, `lon` REAL, `observed_at` INT, `severity` INT, `speed_kmh` REAL, `peak_score` REAL, `heading_deg` INT NULL, `uploaded` INT (0 or 1) |
 | `segment_sample_local` | `id` TEXT (UUID) PK, `trip_id` TEXT FK (cascade delete), `start_lat` REAL, `start_lon` REAL, `end_lat` REAL, `end_lon` REAL, `observed_at` INT, `length_m` REAL, `roughness` REAL, `speed_kmh` REAL, `uploaded` INT (0 or 1) |
-| `upload_queue` (v2) | `id` INTEGER PK, `trip_id` TEXT FK (cascade delete), `state` TEXT (`pending`, `in_progress`, `done`, `failed`, `skipped`), `attempts` INT, `next_attempt_at` INT, `last_error` TEXT NULL |
+| `upload_queue` (v2, schema version 2) | `id` INTEGER PK autoincrement, `trip_id` TEXT FK (cascade delete, unique: one row per trip), `state` TEXT (`pending`, `in_progress`, `done`, `failed`, `skipped`), `attempts` INT, `next_attempt_at` INT (epoch ms), `last_error` TEXT NULL (error category only, for example `network` or `rejected:INVALID_REQUEST`; never bodies or coordinates) |
 
-`trip_point` is downsampled for display (about one point per second or per few seconds). Indices: `trip_point(trip_id, t)`, `hazard_event_local(trip_id)`, `segment_sample_local(trip_id)`, `upload_queue(state, next_attempt_at)`.
+`trip_point` is downsampled for display (about one point per second or per few seconds). Indices: `trip_point(trip_id, t)`, `hazard_event_local(trip_id)`, `segment_sample_local(trip_id)`, `upload_queue(state, next_attempt_at)`, unique `upload_queue(trip_id)`.
 
 ### B2. Example entities
 

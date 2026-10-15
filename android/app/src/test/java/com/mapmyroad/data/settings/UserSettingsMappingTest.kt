@@ -33,6 +33,21 @@ class UserSettingsMappingTest {
     }
 
     @Test
+    fun contributionKeys_areMapped() {
+        val preferences =
+            mutablePreferencesOf(
+                DataStoreSettingsRepository.Keys.CONTRIBUTION_ENABLED to true,
+                DataStoreSettingsRepository.Keys.CONTRIBUTION_ENABLED_AT to 1_791_880_212_000L,
+            )
+
+        val settings = preferences.toUserSettings()
+
+        assertEquals(true, settings.contributionEnabled)
+        assertEquals(1_791_880_212_000L, settings.contributionEnabledAtMs)
+        assertNull(emptyPreferences().toUserSettings().contributionEnabledAtMs)
+    }
+
+    @Test
     fun unknownVehicleCode_mapsToNull() {
         val preferences = mutablePreferencesOf(DataStoreSettingsRepository.Keys.VEHICLE_TYPE to 99)
 

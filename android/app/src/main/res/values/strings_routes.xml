@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Destination search (S8, M5-7) -->
+  <string name="search_label">Destination</string>
+  <string name="search_hint">Where to?</string>
+  <string name="search_clear">Clear search</string>
+  <string name="search_recent_title">Recent</string>
+  <string name="search_idle_hint">Type at least 3 letters to search for a place.</string>
+  <string name="search_empty">No places found. Check the spelling or try a nearby landmark.</string>
+  <string name="search_error_offline">You\'re offline. Check your connection and try again.</string>
+  <string name="search_error_unavailable">Search is unavailable, try again.</string>
+  <string name="search_error_generic">Search did not work. Try again.</string>
+  <string name="search_retry">Try again</string>
+
+  <!-- Route candidates (S8, M5-8). The title names the destination, for example "To Shaniwar Wada". -->
+  <string name="routes_title">To %1$s</string>
+  <string name="routes_title_fallback">Routes</string>
+  <string name="routes_map_description">Map of route options</string>
+  <!-- TalkBack summary of the map: description, then the number of routes shown. -->
+  <string name="routes_map_summary">%1$s. %2$s</string>
+  <plurals name="routes_map_count">
+    <item quantity="one">%d route shown</item>
+    <item quantity="other">%d routes shown</item>
+  </plurals>
+
+  <!-- Origin: the current location -->
+  <string name="routes_location_rationale_title">Routes start where you are</string>
+  <string name="routes_location_rationale_body">Allow precise location so MapMyRoad can plan routes from your current position. It is only used while you plan.</string>
+  <string name="routes_location_allow">Allow location</string>
+  <string name="routes_location_denied">Location access is off, so routes cannot start from where you are. You can still open the destination in Google Maps.</string>
+  <string name="routes_location_open_settings">Open settings</string>
+  <string name="routes_locating">Finding your location…</string>
+  <string name="routes_location_unavailable">Could not find your location. Turn on location and try again.</string>
+
+  <string name="routes_vehicle_title">Choose your vehicle</string>
+  <string name="routes_vehicle_body">Routes and comfort scores depend on what you travel in.</string>
+
+  <string name="routes_loading">Finding routes…</string>
+  <string name="routes_retry">Try again</string>
+
+  <!-- Candidate cards -->
+  <string name="routes_label_fastest">Fastest</string>
+  <string name="routes_label_smoothest">Smoothest</string>
+  <string name="routes_label_balanced">Balanced</string>
+  <string name="routes_label_alternative">Alternative</string>
+  <string name="routes_recommended">Recommended</string>
+  <!-- ETA is typical, not live traffic (API_SPEC.md 5.8). -->
+  <string name="routes_eta_minutes">%1$d min typical</string>
+  <string name="routes_eta_hours">%1$d h %2$d min typical</string>
+  <!-- ETA, then distance, for example "23 min typical · 9.2 km". -->
+  <string name="routes_eta_distance">%1$s · %2$s</string>
+  <string name="routes_comfort">Comfort %1$d</string>
+  <string name="routes_comfort_limited">Comfort %1$d · limited data</string>
+  <string name="routes_comfort_no_data">Comfort: not enough data</string>
+  <!-- Hazard counts, for example "0 severe · 4 rough". -->
+  <string name="routes_hazards_format">%1$s · %2$s</string>
+  <plurals name="routes_hazards_severe">
+    <item quantity="one">%d severe</item>
+    <item quantity="other">%d severe</item>
+  </plurals>
+  <plurals name="routes_hazards_rough">
+    <item quantity="one">%d rough</item>
+    <item quantity="other">%d rough</item>
+  </plurals>
+  <string name="routes_limited_data">Limited data on this route</string>
+
+  <!-- Trade-off against the fastest route, for example "4 min slower, far fewer severe potholes". -->
+  <string name="routes_tradeoff_format">%1$s, %2$s</string>
+  <plurals name="routes_tradeoff_slower">
+    <item quantity="one">%d min slower</item>
+    <item quantity="other">%d min slower</item>
+  </plurals>
+  <plurals name="routes_tradeoff_faster">
+    <item quantity="one">%d min faster</item>
+    <item quantity="other">%d min faster</item>
+  </plurals>
+  <string name="routes_tradeoff_same_time">About the same time</string>
+  <string name="routes_tradeoff_far_fewer_severe">far fewer severe potholes</string>
+  <string name="routes_tradeoff_fewer_severe">fewer severe potholes</string>
+  <string name="routes_tradeoff_more_severe">more severe potholes</string>
+  <string name="routes_tradeoff_fewer_rough">fewer rough patches</string>
+  <string name="routes_tradeoff_more_rough">more rough patches</string>
+  <string name="routes_tradeoff_similar">similar road quality</string>
+  <string name="routes_tradeoff_unknown">not enough road data to compare</string>
+
+  <!-- One-time explainer for "typical" (UI_UX S8) -->
+  <string name="routes_eta_explainer_title">About these times</string>
+  <string name="routes_eta_explainer_body">Times are typical. They use usual speeds on each road, not live traffic.</string>
+  <string name="routes_eta_explainer_dismiss">Got it</string>
+
+  <!-- Preference slider (PRD RT-3): Comfort on the left, Speed on the right. -->
+  <string name="routes_preference_title">Comfort or speed</string>
+  <string name="routes_preference_comfort">Comfort</string>
+  <string name="routes_preference_speed">Speed</string>
+  <string name="routes_preference_state_comfort">Prefer comfort</string>
+  <string name="routes_preference_state_balanced">Balanced</string>
+  <string name="routes_preference_state_speed">Prefer speed</string>
+
+  <!-- Hand-off (M5-9, PRD RT-4) -->
+  <string name="routes_open_google_maps">Open in Google Maps</string>
+  <string name="routes_google_maps_note">Google Maps may choose its own path.</string>
+
+  <!-- Errors -->
+  <string name="routes_error_offline">You\'re offline. Check your connection and try again.</string>
+  <string name="routes_error_unavailable">Routing is unavailable. Try again later.</string>
+  <string name="routes_error_no_route">No route found.</string>
+  <string name="routes_error_outside_area">Outside the supported area.</string>
+  <string name="routes_error_too_far">This destination is too far away to plan.</string>
+  <string name="routes_error_generic">Could not load routes. Try again.</string>
+</resources>

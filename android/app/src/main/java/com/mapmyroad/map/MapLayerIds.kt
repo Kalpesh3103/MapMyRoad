@@ -43,6 +43,33 @@ object MapLayerIds {
             RoadBand.NO_DATA -> TRACK_LAYER_NO_DATA
         }
 
+    /** Community map (M5-5): backend vector tiles, one source for both tile layers. */
+    const val COMMUNITY_SOURCE = "mmr-community"
+
+    const val COMMUNITY_ROAD_LAYER_GOOD = "mmr-community-road-good"
+    const val COMMUNITY_ROAD_LAYER_FAIR = "mmr-community-road-fair"
+    const val COMMUNITY_ROAD_LAYER_POOR = "mmr-community-road-poor"
+
+    /** Community hazards: the same severity shape icons as the personal map, opacity from confidence. */
+    const val COMMUNITY_HAZARD_LAYER = "mmr-community-hazards"
+
+    /** Layers of the personal map (own trips and hazards). */
+    val personalLayerIds: List<String> = trackLayerIds + listOf(HAZARD_CLUSTER_LAYER, HAZARD_LAYER)
+
+    val communityRoadLayerIds: List<String> =
+        listOf(COMMUNITY_ROAD_LAYER_GOOD, COMMUNITY_ROAD_LAYER_FAIR, COMMUNITY_ROAD_LAYER_POOR)
+
+    val communityLayerIds: List<String> = communityRoadLayerIds + COMMUNITY_HAZARD_LAYER
+
+    /** Community line layer of [band], or null for [RoadBand.NO_DATA], which the tiles never contain. */
+    fun communityRoadLayerId(band: RoadBand): String? =
+        when (band) {
+            RoadBand.GOOD -> COMMUNITY_ROAD_LAYER_GOOD
+            RoadBand.FAIR -> COMMUNITY_ROAD_LAYER_FAIR
+            RoadBand.POOR -> COMMUNITY_ROAD_LAYER_POOR
+            RoadBand.NO_DATA -> null
+        }
+
     /** Style image name of a single hazard marker. */
     fun markerImage(severity: Severity): String = "mmr-marker-${severity.name.lowercase()}"
 

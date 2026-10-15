@@ -73,7 +73,9 @@ mmr:
     # kid1:base64Secret,kid2:base64Secret, newest first, each secret >= 256 bits. Required outside local/test.
     jwt-keys: ${JWT_KEYS:}
     access-token-ttl: PT1H
-    refresh-token-ttl: P30D
+    # Longer than the 90-day device ID detachment (DATABASE_SCHEMA.md A10), so a forced re-registration can never
+    # leave data that is still tied to the old install ID out of reach of "delete my data" (PRD PV-3).
+    refresh-token-ttl: P180D
     nonce-ttl: PT5M
   # Route candidates and comfort scoring (API_SPEC.md 5.8, ARCHITECTURE.md 8.4). Initial values; TODO(M1-5) calibrate.
   routing:
