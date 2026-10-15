@@ -48,7 +48,10 @@ public class HttpPhotonClient implements PhotonClient {
     public HttpPhotonClient(RestClient.Builder restClientBuilder, GeocodeProperties properties) {
         this.properties = properties;
         this.slots = new Semaphore(properties.upstreamMaxConcurrent(), true);
+        // HTTP/1.1 like the Valhalla clients: the JDK client otherwise negotiates HTTP/2, which can stall until the
+        // timeout on some networks and servers (seen on the first Windows test: "Photon unreachable: timeout").
         HttpClient httpClient = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(properties.connectTimeout())
                 .followRedirects(HttpClient.Redirect.NEVER)
                 .build();

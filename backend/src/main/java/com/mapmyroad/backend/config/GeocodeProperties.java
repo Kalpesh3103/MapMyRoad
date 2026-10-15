@@ -51,8 +51,8 @@ public record GeocodeProperties(
         if (userAgent == null || userAgent.isBlank()) {
             userAgent = DEFAULT_USER_AGENT;
         }
-        connectTimeout = positiveOr(connectTimeout, Duration.ofSeconds(2), "connect-timeout");
-        readTimeout = positiveOr(readTimeout, Duration.ofSeconds(5), "read-timeout");
+        connectTimeout = positiveOr(connectTimeout, Duration.ofSeconds(5), "connect-timeout");
+        readTimeout = positiveOr(readTimeout, Duration.ofSeconds(10), "read-timeout");
         cacheTtl = positiveOr(cacheTtl, Duration.ofDays(7), "cache-ttl");
         negativeCacheTtl = positiveOr(negativeCacheTtl, Duration.ofHours(1), "negative-cache-ttl");
         upstreamQueueTimeout = positiveOr(upstreamQueueTimeout, Duration.ofSeconds(1), "upstream-queue-timeout");

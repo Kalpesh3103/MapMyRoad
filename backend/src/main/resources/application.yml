@@ -107,8 +107,9 @@ mmr:
     base-url: ${PHOTON_URL:https://photon.komoot.io}
     # Fair use asks for an identifying User-Agent. Replace the placeholder with a real contact before launch.
     user-agent: ${PHOTON_USER_AGENT:MapMyRoad/0.1 (+contact placeholder)}
-    connect-timeout: PT2S
-    read-timeout: PT5S
+    # The public Photon instance is sometimes slow; the app waits up to 20 s for our answer.
+    connect-timeout: PT5S
+    read-timeout: PT10S
     cache-ttl: P7D
     negative-cache-ttl: PT1H
     memory-cache-size: 10000

@@ -16,8 +16,8 @@ class GeocodePropertiesTest {
         assertThat(p.enabled()).isTrue();
         assertThat(p.baseUrl()).isEqualTo("https://photon.komoot.io");
         assertThat(p.userAgent()).startsWith("MapMyRoad/");
-        assertThat(p.connectTimeout()).isEqualTo(Duration.ofSeconds(2));
-        assertThat(p.readTimeout()).isEqualTo(Duration.ofSeconds(5));
+        assertThat(p.connectTimeout()).isEqualTo(Duration.ofSeconds(5));
+        assertThat(p.readTimeout()).isEqualTo(Duration.ofSeconds(10));
         assertThat(p.cacheTtl()).isEqualTo(Duration.ofDays(7));
         assertThat(p.negativeCacheTtl()).isEqualTo(Duration.ofHours(1));
         assertThat(p.memoryCacheSize()).isEqualTo(10_000);
