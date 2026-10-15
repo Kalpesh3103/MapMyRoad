@@ -123,6 +123,10 @@ Tick off as each is created. Do not write secrets here.
 
 Newest first. Format: date, what changed, what is next. Link task IDs and ADRs.
 
+### 2026-10-15 (M4 manual verification on Windows)
+- Kalpesh ran all 17 requests of `tools/postman/MapMyRoad.postman_collection.json` against the local stack (backend `local` profile, PostGIS, Valhalla on the dev extract, seed data). All passed: config and health, challenge, registration and refresh, upload and duplicate detection, hazards list, detail and feedback, TileJSON and an MVT tile, Photon search and reverse geocode, route candidates, delete my data.
+- Still open before M4 tasks can be closed: the full `gradlew build` with integration tests (Docker), the M4 exit gate check (synthetic uploads from several devices flowing through matching and aggregation into tiles and route scoring), the pilot-area extract (M4-2), backups and hardening on the VM (M4-4, M4-20), and the Ferrostar spike (M4-18).
+
 ### 2026-10-15 (M4-2: Git Bash readiness check)
 - Confirmed Valhalla was serving `/status`; native Windows curl failed writing to `/dev/null` with MSYS path conversion disabled. Replaced host-side curl `-o /dev/null` with shell redirection in Valhalla and API smoke checks.
 - Bash syntax passed. Live Valhalla smoke passed for motorcycle, motor_scooter and auto routes and motorcycle trace_attributes against the existing dev tiles. Next: run the seed-only loader to finish local setup; pilot-area verification remains pending.
